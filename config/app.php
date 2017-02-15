@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', true),
+    'debug' => env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://mobuzzasia.com/livote'),
+    'url' => env('APP_URL', 'http://livotes.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -103,7 +103,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => env('APP_KEY','base64:Y8UiA3TJ073iDE0w8NVB3UodQdBNGYqBFBIOqzjX5BA='),
 
     'cipher' => 'AES-256-CBC',
 
