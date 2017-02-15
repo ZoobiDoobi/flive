@@ -16,7 +16,8 @@ class FacebookController extends Controller
     {
         $this->fb = $fb;
     }
-    //
+    
+
     public function Login($value='')
     {
     	# code...
@@ -66,46 +67,48 @@ class FacebookController extends Controller
         }
 
         $this->fb->setDefaultAccessToken($token);
-
-        //Put in the session for later use
-        Session::put('facbook_access_token', $token);
         //Getting user specific information and store it in databse using Eloquent User Model
         try {
             $response = $this->fb->get('/me?fields=id,name,email');
-            $facebookUser = $response->getGraphUser();
-            // Create the user if it does not exist or update the existing entry.
 
         } catch (Exception $e) {
             dd($e->getMessage());
         }
 
         $userNode = $response->getGraphUser();
-        Session::put('fb_user_id', $userNode->getId()); // put the user id in session, we would retrieve 
+        //Put in the session for later use
+        Session::put('facbook_access_token', $token);
+        Session::put('fb_user_id', $userNode->getId()); // put the user id in session, we would retrieve
 
-        //redirect the user, so user can see a list of the pages that he/she manages
-
-        return redirect('pages/index');
-    }
-
-    public function Webhook(Request $request)
-    {
-        # code...
-        if($request->isMethod('get')){
-            //Below code is just for verification for the first time
-            $verifyToken = 'Axb123xyz';
-            if($request->input('hub_verify_token') == $verifyToken){
-                return $request->input('hub_challenge');
-            } 
-        }
-        elseif ($request->isMethod('post')) {
-            Storage::disk('local')->put('webhook.txt', $request->input('entry.0.changes.0.value.id'));
-             //$requestArray = json_encode($request->all());
-             //$requestArray = json_decode($requestArray,  true, 512, JSON_BIGINT_AS_STRING);
-             //Storage::disk('local')->put('webhook.txt', print_r($requestArray, true));
-        }
+        //Save the user to database, if it already exists,otherwise update it
+         $user = User::where('facebook_user_id', $userNode->getId())->first();
+         if( ! $user)
+         {  //User does not exist
+            $user = new User;
+            $user->name = $userNode->getName();
+            $user->email = $userNode->getEmail();
+            $user->facebook_user_id = $userNode->getId();
+            $user->access_token = $token;
+            if($user->save()){
+                return redirect('pages/index');
+            }
+            else{
+                dd($user);
+            }
+         }
+         else
+         {  //user exist we need to update its info
+            $user->name = $userNode->getName();
+            $user->email = $userNode->getEmail();
+            $user->access_token = $token;
+            if($user->save()){
+                return redirect('pages/index');
+            }
+            else{
+                dd($user);
+            }
+         }
         
-        
-        return response('OK',200);
     }
 
     public function test($value='')
