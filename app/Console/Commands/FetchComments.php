@@ -43,14 +43,5 @@ class FetchComments extends Command
     public function handle()
     {
         //
-        $liveVideos = LiveVideo::all();
-        foreach ($liveVideos as $liveVideo) {
-            # code...
-            if($liveVideo->status == 'SCHEDULED_UNPUBLISHED' ||  $liveVideo->status == 'LIVE_NOW'){
-                $user = User::where('facebook_user_id' , $liveVideo->fb_user_id)->first();
-                $this->fb->setDefaultAccessToken($user->access_token);
-                $comments = $this->fb->get('/' . $liveVideo->live_video_id . '/comments');
-            }
-        }
     }
 }
