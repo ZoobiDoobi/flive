@@ -19,4 +19,6 @@ Route::post('campaign/create' , 'Campaign\CampaignController@create');
 Route::post('campaign/store', 'Campaign\CampaignController@store');
 Route::get('campaign/{id}','Campaign\CampaignController@show')->name('campaign_live');
 Route::get('facebook/test', 'Facebook\FacebookController@test');
+Route::get('facebook/cron', 'Facebook\FacebookController@cron');
 Route::get('/', 'Home\HomeController@index');
+Route::get('facebook/keywords' , 'Facebook\FacebookController@assignKeywords');

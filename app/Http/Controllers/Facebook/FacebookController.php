@@ -6,7 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Session;
 use App\Models\User;
+use App\Models\Comment;
+use App\Models\Keyword;
 use Illuminate\Support\Facades\Storage;
+use App\Models\LiveVideo;
+use DB;
+
 
 class FacebookController extends Controller
 {
@@ -118,7 +123,60 @@ class FacebookController extends Controller
     public function test($value='')
     {
         # code...
+        $liveVideos = LiveVideo::where('active' , 1)->get();
         
+        foreach($liveVideos as $liveVideo) 
+        {
+            # code...
+            if($liveVideo->status == 'SCHEDULED_UNPUBLISHED' ||  $liveVideo->status == 'LIVE_NOW')
+            {
+                $user = User::where('facebook_user_id' , $liveVideo->fb_user_id)->first();
+                $this->fb->setDefaultAccessToken($user->access_token);
+                try {
+                    $response = $this->fb->get('/' . $liveVideo->live_vidoe_id . '/comments');
+                    $comments = $response->getGraphEdge()->asArray();
+                    
+                    //////////////////////////////Saving Comment/////////////////////////////
+                    $data = array();
+                    $count = 0;
+                    foreach ($comments as $comment) 
+                    {
+                        # code...
+                        $data[$count] = array(
+                            'comment_id' => $comment['id'], 
+                            'comment_body' => $comment['message'],
+                            'comment_author_id' => $comment['from']['id'],
+                            'comment_author_name' => $comment['from']['name'],
+                            'active' => 1,
+                            'keyword_id' => null,
+                            'live_video_id' => $liveVideo->live_vidoe_id
+                            );
+                        $count++;
+                    }
+                    
+                    $data = array_map([$this , 'assignKeywords'], $data);
+                    DB::table('comments')->insert($data); //put a check here to ensure comments not get duplicated
+
+                } catch (Exception $e) {
+                    dd($e->getMessage());   
+                }
+            }
+        }
+        
+    }
+
+    public function assignKeywords($comment)
+    {
+        # code...
+        $keywords = Keyword::where('active' , 1)->get()->toArray();
+        foreach($keywords as $keyword){
+            echo $comment['comment_body'] . " " . $keyword['keyword_name'];
+            if(strstr($comment['comment_body'] , $keyword['keyword_name']) !== FALSE){
+                $comment['keyword_id'] = $keyword['id'];
+
+            }
+        }
+        return $comment;
     }
 
 }
