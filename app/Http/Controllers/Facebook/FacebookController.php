@@ -123,6 +123,27 @@ class FacebookController extends Controller
     public function test($value='')
     {
         # code...
+
+        
+    }
+
+    public function assignKeywords($comment)
+    {
+        # code...
+        $keywords = Keyword::where('active' , 1)->get()->toArray();
+        foreach($keywords as $keyword){
+            echo $comment['comment_body'] . " " . $keyword['keyword_name'];
+            if(strstr($comment['comment_body'] , $keyword['keyword_name']) !== FALSE){
+                $comment['keyword_id'] = $keyword['id'];
+
+            }
+        }
+        return $comment;
+    }
+
+    public function cron($value='')
+    {
+        # code...
         $liveVideos = LiveVideo::where('active' , 1)->get();
         
         foreach($liveVideos as $liveVideo) 
@@ -162,21 +183,6 @@ class FacebookController extends Controller
                 }
             }
         }
-        
-    }
-
-    public function assignKeywords($comment)
-    {
-        # code...
-        $keywords = Keyword::where('active' , 1)->get()->toArray();
-        foreach($keywords as $keyword){
-            echo $comment['comment_body'] . " " . $keyword['keyword_name'];
-            if(strstr($comment['comment_body'] , $keyword['keyword_name']) !== FALSE){
-                $comment['keyword_id'] = $keyword['id'];
-
-            }
-        }
-        return $comment;
     }
 
 }
