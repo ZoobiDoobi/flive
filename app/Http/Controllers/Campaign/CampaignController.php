@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Session;
 use App\Models\Campaign;
 use App\Models\FacebookPage;
+use App\Models\LiveVideo;
 use DB;
 
 
@@ -89,11 +90,11 @@ class CampaignController extends Controller
         $request->file('bg-image')->move(public_path('uploads'), $request->file('bg-image')->getClientOriginalName());
 
         ///////////////////////////////////////////////Saving Campaign Information//////////////////////////////////////
-        $campaign->name = $request->input('campaignName');
+        $campaign->campaign_name = $request->input('campaignName');
         $campaign->keywords = $request->input('keywords');
         $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
         $campaign->live_video_id = $request->input('live_video_dropdown');
-        $campaign->acitve = 1; //campaign is currently active
+        $campaign->active = 1; //campaign is currently active
 
         Session::put('live_video_id',$request->input('live_video_dropdown')); 
 
@@ -131,7 +132,7 @@ class CampaignController extends Controller
 
         ///////////////////////////////////////////////Start Saving Live Video Information//////////////////////////////////////
         $liveVideo = new LiveVideo;
-        $liveVideo->live_video_id = Session::get('live_video_id');
+        $liveVideo->live_vidoe_id = Session::get('live_video_id'); //this is a spelling mistake in database
         $liveVideo->live_video_name = $request->input('liveVideoName');
         $liveVideo->active = 1;
         $liveVideo->fb_user_id = Session::get('fb_user_id');

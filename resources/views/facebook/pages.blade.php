@@ -10,7 +10,7 @@
                 <div class="panel-body text-center">
                     <form action="{{ action('Campaign\CampaignController@create') }}" method="post">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <select name="pages-dropdown" class="pages-dropdown" onChange="getSelectedOptionText(this.selectedIndex);">
+                        <select name="pages-dropdown" class="pages-dropdown" id="pages" onchange="getSelectedOptionText()">
                             <option value="0">Select..</option>
                             @foreach($pages as $page)
                                 <option value="{{ $page['id'] }}"> {{ $page['name'] }}</option>
@@ -28,8 +28,10 @@
 
 @section('js-section')
     <script>
-        function getSelectedOptionText(selectedOption){
-            document.getElementById('pageName').value = selectedOption.options[selectedOption.selectedIndex].text;
+        function getSelectedOptionText(){
+            var page = document.getElementById('pages');
+            var selectedText = page.options[page.selectedIndex].text;
+            document.getElementById('pageName').value = selectedText;
         }
-    </script>
+   </script>
 @stop

@@ -11,8 +11,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    <link href="css/app.css" rel="stylesheet">
-
+   <!--  <link href="css/app.css" rel="stylesheet">-->
+   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- Scripts -->
     <script>
         window.Laravel = {!! json_encode([
@@ -52,9 +52,18 @@
         @yield('content')
     </div>
 
-    @yield('js-section')
+    
 
     <!-- Scripts -->
-    <script src="js/app.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+      
+  </script>
+    <!-- <script src="js/app.js"></script> -->
+    @yield('js-section')
 </body>
 </html>

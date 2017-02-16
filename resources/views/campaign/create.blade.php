@@ -20,7 +20,7 @@
                         </div>
                         <div class="form-group">
                             <label for="live_video_dropdown">Select the Live Video:</label>
-                            <select name="live_video_dropdown" class="form-control" onChange="getSelectedOptionText(this.selectedIndex);">
+                            <select name="live_video_dropdown" id="videos" class="form-control" onchange="getSelectedOptionText()">
                                 @foreach($liveVideos as $liveVideo)
                                     <option value="{{ $liveVideo['id']}}">{{ $liveVideo['title'] }}</option>
                                 @endforeach
@@ -44,8 +44,10 @@
 
 @section('js-section')
     <script>
-        function getSelectedOptionText(selectedOption){
-            document.getElementById('liveVideoName').value = selectedOption.options[selectedOption.selectedIndex].text;
+        function getSelectedOptionText(){
+            var page = document.getElementById('videos');
+            var selectedText = page.options[page.selectedIndex].text;
+            document.getElementById('liveVideoName').value = selectedText;
         }
-    </script>
+   </script>
 @stop
