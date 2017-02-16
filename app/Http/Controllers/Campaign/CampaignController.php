@@ -146,10 +146,10 @@ class CampaignController extends Controller
         }
         ///////////////////////////////////////////////End Saving Live Video Information//////////////////////////////////////
 
-        $campaignUrl = action('Campaign\CampaignController@show', ['id' => $Session::get('campaign_id')]);
-        $responseArray  = array('success' => true ,  'url' => $campaignUrl);
-        echo json_encode($responseArray, JSON_UNESCAPED_SLASHES);
-
+        $campaignUrl = action('Campaign\CampaignController@show', ['id' => Session::get('campaign_id')]);
+        return view('campaign.liveurl' , ['campaignUrl' => $campaignUrl]);
+        //$responseArray  = array('success' => true ,  'url' => $campaignUrl);
+        //echo json_encode($responseArray, JSON_UNESCAPED_SLASHES); //this will be helpful for ajax
 
     }
 

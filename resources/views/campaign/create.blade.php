@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading text-center"><h2>THIS WILL BE THE HOME PAGE<h2></div>
+                <div class="panel-heading text-center"><h2>Fill Out Below Form to Create Your Campaign<h2></div>
                 <div class="panel-body text-center">
                         <form action="{{ action('Campaign\CampaignController@store') }}" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -21,8 +21,9 @@
                         <div class="form-group">
                             <label for="live_video_dropdown">Select the Live Video:</label>
                             <select name="live_video_dropdown" id="videos" class="form-control" onchange="getSelectedOptionText()">
+                                <option value="0">Select a Live Video</option>
                                 @foreach($liveVideos as $liveVideo)
-                                    <option value="{{ $liveVideo['id']}}">{{ $liveVideo['title'] }}</option>
+                                    <option value="{{ $liveVideo['id']}}" data-status="{{ $liveVideo['status'] }}"> {{ $liveVideo['title'] }} </option>
                                 @endforeach
                             </select>
                         </div>
@@ -31,7 +32,7 @@
                             <input type="file" name="bg-image" id="bg-image">
                         </div>
                         <input type="hidden" name="liveVideoName" id="liveVideoName">
-                        <input type="hidden" name="liveVideoStatus" id="liveVideoStatus" value="{{ $liveVideo['status'] }}">
+                        <input type="hidden" name="liveVideoStatus" id="liveVideoStatus">
                         <button type="submit" class="btn btn-primary">Create Campaign</button>
                     </form>
                 </div>
@@ -45,9 +46,11 @@
 @section('js-section')
     <script>
         function getSelectedOptionText(){
-            var page = document.getElementById('videos');
-            var selectedText = page.options[page.selectedIndex].text;
+            var liveVideo = document.getElementById('videos');
+            var selectedText = liveVideo.options[liveVideo.selectedIndex].text;
+            var liveVideoStatus = liveVideo.options[liveVideo.selectedIndex].getAttribute('data-status');
             document.getElementById('liveVideoName').value = selectedText;
+            document.getElementById('liveVideoStatus').value = liveVideoStatus;
         }
    </script>
 @stop
