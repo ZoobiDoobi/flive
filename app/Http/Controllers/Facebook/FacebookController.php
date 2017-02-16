@@ -90,6 +90,7 @@ class FacebookController extends Controller
             $user->facebook_user_id = $userNode->getId();
             $user->access_token = $token;
             if($user->save()){
+                Session::put('local_user_id', $user->id);
                 return redirect('pages/index');
             }
             else{
@@ -102,6 +103,7 @@ class FacebookController extends Controller
             $user->email = $userNode->getEmail();
             $user->access_token = $token;
             if($user->save()){
+                Session::put('local_user_id', $user->id);
                 return redirect('pages/index');
             }
             else{

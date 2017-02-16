@@ -1,25 +1,14 @@
-<!DOCTYPE html>
-<html lang="{{ config('app.locale') }}">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Styles -->
-        <link href="/css/app.css" rel="stylesheet">
+@extends('layouts.app')
 
-        <title>Laravel</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-
-            <div class="container">
-                
-                <h1 class="text-center">Start Creating Campaign</h1>
-                <div class="row">
-                    <form action="{{ action('Campaign\CampaignController@store') }}" method="post" enctype="multipart/form-data">
+@section('content')
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center"><h2>THIS WILL BE THE HOME PAGE<h2></div>
+                <div class="panel-body text-center">
+                        <form action="{{ action('Campaign\CampaignController@store') }}" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="campaignName">Campaign Name:</label>
@@ -31,7 +20,7 @@
                         </div>
                         <div class="form-group">
                             <label for="live_video_dropdown">Select the Live Video:</label>
-                            <select name="live_video_dropdown" class="form-control">
+                            <select name="live_video_dropdown" class="form-control" onChange="getSelectedOptionText(this.selectedIndex);">
                                 @foreach($liveVideos as $liveVideo)
                                     <option value="{{ $liveVideo['id']}}">{{ $liveVideo['title'] }}</option>
                                 @endforeach
@@ -40,11 +29,23 @@
                         <div class="form-group">
                             <label for="bg-image">Select Background Image</label>
                             <input type="file" name="bg-image" id="bg-image">
-                        </div><br>
-                        <button type="submit">Create Campaign</button>
+                        </div>
+                        <input type="hidden" name="liveVideoName" id="liveVideoName">
+                        <input type="hidden" name="liveVideoStatus" id="liveVideoStatus" value="{{ $liveVideo['status'] }}">
+                        <button type="submit" class="btn btn-primary">Create Campaign</button>
                     </form>
                 </div>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+</div>
+@endsection
+
+
+@section('js-section')
+    <script>
+        function getSelectedOptionText(selectedOption){
+            document.getElementById('liveVideoName').value = selectedOption.options[selectedOption.selectedIndex].text;
+        }
+    </script>
+@stop
