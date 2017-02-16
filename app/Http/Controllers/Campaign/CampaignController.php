@@ -94,7 +94,7 @@ class CampaignController extends Controller
         $campaign->live_video_id = $request->input('live_video_dropdown');
         $campaign->acitve = 1; //campaign is currently active
 
-        Session::put('live_video_id') = $request->input('live_video_dropdown'); 
+        Session::put('live_video_id',$request->input('live_video_dropdown')); 
 
 
         if($campaign->save()){
