@@ -31,7 +31,7 @@ class CampaignController extends Controller
         //Right now, I am doing this here for Initial prototype, but I will move it to proper controller and function
         //and also through gets submitted from AJAX 
         $fbPage = FacebookPage::where('fb_page_id',$pageId)->first();
-        
+
         if(! $fbPage ){
             //this facebook page does not exist already in our database
             $fbPage = new FacebookPage;
@@ -70,7 +70,7 @@ class CampaignController extends Controller
     	}
 
     	$liveVideos = $response->getGraphEdge();
-    	$allLiveVideos = [];
+    	$allLiveVideos = array();
     	$count = 0;
     	foreach ($liveVideos as $liveVideo) {
     		$allLiveVideos[$count] = $liveVideo->asArray();
