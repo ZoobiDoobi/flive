@@ -39,7 +39,7 @@ class CampaignController extends Controller
             $fbPage->fb_page_name = $pageName;
             $fbPage->fb_user_id = Session::get('fb_user_id');
             $fbPage->active = 1;
-            if($fbPage-save()){
+            if($fbPage->save()){
 
             }
             else{
@@ -51,7 +51,7 @@ class CampaignController extends Controller
             $fbPage->fb_page_name = $pageName;
             $fbPage->fb_user_id = Session::get('fb_user_id');
             $fbPage->active = 1;
-            if($fbPage-save()){
+            if($fbPage->save()){
 
             }
             else{
