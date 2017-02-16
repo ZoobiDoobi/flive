@@ -103,7 +103,7 @@ class FacebookController extends Controller
             $user->name = $userNode->getName();
             $user->email = $userNode->getEmail();
             $user->access_token = $token;
-            $user-active = 1;
+            $user->active = 1;
             if($user->save()){
                 Session::put('local_user_id', $user->id);
                 return redirect('pages/index');
