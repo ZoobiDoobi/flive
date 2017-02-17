@@ -8,6 +8,8 @@ use Session;
 use App\Models\Campaign;
 use App\Models\FacebookPage;
 use App\Models\LiveVideo;
+use App\Models\Comment;
+
 use DB;
 
 
@@ -147,15 +149,21 @@ class CampaignController extends Controller
         ///////////////////////////////////////////////End Saving Live Video Information//////////////////////////////////////
 
         $campaignUrl = action('Campaign\CampaignController@show', ['id' => Session::get('campaign_id')]);
+        $campaingUrl .= '/?liveVideo=' . Sessiong::get('live_video_id');
         return view('campaign.liveurl' , ['campaignUrl' => $campaignUrl]);
         //$responseArray  = array('success' => true ,  'url' => $campaignUrl);
         //echo json_encode($responseArray, JSON_UNESCAPED_SLASHES); //this will be helpful for ajax
 
     }
 
-    public function show($campaignId)
+    public function show($campaignId , Request $request)
     {
         # code...
-        dd($campaignId);
-    }
+       $campaign = Campaign::where('id' , $campaignId)->first()->toArray();
+       $keywords = explode(',', $campaign['keywords']);
+       $boxCount = count($keywords);
+       $liveVideoId = $request->query('liveVideo');
+       $votes = DB::select('SELECT count(comments.keyword_id) as votes, keywords.keyword_name FROM comments,keywords WHERE comments.live_video_id = 1655266587823356 AND comments.keyword_id = keywords.id GROUP BY comments.keyword_id');
+       return view('campaign.live', ['boxCount' => $boxCount , 'votesCount' => $votes , 'imageUrl' => $campaign['image_path']]);
+   }
 }
