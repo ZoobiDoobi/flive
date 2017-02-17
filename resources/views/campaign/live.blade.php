@@ -1,6 +1,6 @@
 <?php
 $page = $_SERVER['PHP_SELF'];
-$sec = "1000";
+$sec = "60";
 header("Refresh: $sec; url=$page");
 ?>
 <!DOCTYPE html>
