@@ -1,5 +1,7 @@
 <?php
 $page = $_SERVER['PHP_SELF'];
+echo $page;
+exit;
 $sec = "60";
 header("Refresh: $sec; url=$page");
 ?>
