@@ -1,2 +1,0 @@
-[15-Feb-2017 15:25:39 UTC] PHP Fatal error:  Class 'PDO' not found in /home/zubair/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 1199
-[15-Feb-2017 15:28:29 UTC] PHP Fatal error:  Class 'PDO' not found in /home/zubair/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 1199
