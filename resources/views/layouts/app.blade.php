@@ -55,7 +55,7 @@
     
 
     <!-- Scripts -->
-    <script src="{{base_url('js/app.js)}}"></script>
+    <script src="{{base_url('js/app.js')}}"></script>
     @yield('js-section')
 </body>
 </html>
