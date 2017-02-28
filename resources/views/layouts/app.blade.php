@@ -11,7 +11,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-     <link href="{{URL::asset('css/app.css')}}" rel="stylesheet">
+     <link href="{{asset('css/app.css')}}" rel="stylesheet">
    <!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
     <!-- Scripts -->
     <script>
@@ -55,7 +55,7 @@
     
 
     <!-- Scripts -->
-    <script src="{{URL::asset('js/app.js')}}"></script>
+    <script src="{{asset('js/app.js')}}"></script>
     @yield('js-section')
 </body>
 </html>
