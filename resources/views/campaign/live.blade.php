@@ -53,27 +53,6 @@
                 </div>
             </div>
         </nav>
-    <div class="container">
-        <div class="row">
-            @if($boxCount == 2)
-                <div class="col-md-6"></div>
-                <div class="col-md-6"></div>
-            @elseif($boxCount == 3)
-                <div class="col-md-4">
-                    
-                </div>
-                <div class="col-md-4"></div>
-                <div class="col-md-4"></div>
-            @else
-                @for($i = 0; $i < $boxCount; $i++)
-                 <div class="col-md-3">
-                    <h2>{{$votesCount[$i]->keyword_name}}</h2>
-                    <h3>{{$votesCount[$i]->votes}}</h3>
-                </div>
-                @endfor
-            @endif
-        </div>
-    </div>
     
     </div>
 
