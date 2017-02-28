@@ -18,6 +18,7 @@
     <script>
         setTimeout(function(){
            window.location.reload(1);
+           document.getElementById("count-div").innerHTML += "countbc";
         }, 5000);
     </script>
     <style>
@@ -55,7 +56,7 @@
                 </div>
             </div>
         </nav>
-    
+        <div id="count-div"></div>
     </div>
 
     
