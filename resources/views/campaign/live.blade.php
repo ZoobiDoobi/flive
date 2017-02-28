@@ -16,7 +16,9 @@
    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- Scripts -->
     <script>
-        alert('zubair mohsin');
+        setTimeout(function(){
+           window.location.reload(1);
+        }, 5000);
     </script>
     <style>
         .col-md-*{
