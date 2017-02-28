@@ -17,8 +17,10 @@
     <!-- Scripts -->
     <script>
         setTimeout(function(){
+
+            document.getElementById("count-div").innerHTML += "countbc";
            window.location.reload(1);
-           document.getElementById("count-div").innerHTML += "countbc";
+
         }, 5000);
     </script>
     <style>
