@@ -185,4 +185,21 @@ class FacebookController extends Controller
         }
     }
 
+    public function Webhook(Request $request)
+    {
+        # code...
+        $verifyToken = 'Axb123xyz';
+        if($request->isMethod('get')){
+            if($verifyToken == $request->input('hub_verify_token')){
+                return $request->input('hub_challenge');
+            }
+        }
+        else if($request->isMethod('post')){
+            $data = json_encode($request->all());
+            $fileName = time() . '_datafile.json';
+            File::put(public_path('/uploads/json' . $fileName),$data);
+        }
+        return response('OK',200);
+    }
+
 }

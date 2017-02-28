@@ -21,5 +21,5 @@ const app = new Vue({
 
 
 $(document).ready(function(){
-	alert('zubair mohsin');
+	
 });

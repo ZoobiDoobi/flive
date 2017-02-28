@@ -1,10 +1,4 @@
-<?php
-$page =  url('/');
-echo $page . '';
-exit;
-$sec = "60";
-header("Refresh: $sec; url=$page");
-?>
+
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
 <head>
@@ -22,9 +16,7 @@ header("Refresh: $sec; url=$page");
    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- Scripts -->
     <script>
-        window.Laravel = {!! json_encode([
-            'csrfToken' => csrf_token(),
-        ]) !!};
+        alert('zubair mohsin');
     </script>
     <style>
         .col-md-*{
