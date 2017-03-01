@@ -17,16 +17,13 @@
     <!-- Scripts -->
     <script>
         setTimeout(function(){
-
-            document.getElementById("count-div").innerHTML += "countbc";
            window.location.reload(1);
-
         }, 5000);
     </script>
     <style>
-        .col-md-*{
+        .col-md-3{
             min-height: 200px !important;
-            background: red;
+            background: white;
         }
     </style>
 </head>
@@ -58,7 +55,51 @@
                 </div>
             </div>
         </nav>
-        <div id="count-div"></div>
+        <div class="container">
+            <div class="row">
+                @if($boxCount == 2)
+                <div class="col-md-6 text-center" >
+                    <h1>{{$votesArray[0]['keyword']}}</h1>
+                    <h3>{{$votesArray[0]['votes']}}</h3>
+                </div>
+                <div class="col-md-6 text-center" >
+                    <h1>{{$votesArray[1]['keyword']}}</h1>
+                    <h3>{{$votesArray[1]['votes']}}</h3>
+                </div>
+                @elseif($boxCount == 3)
+                <div class="col-md-4 text-center" >
+                    <h1>{{$votesArray[0]['keyword']}}</h1>
+                    <h3>{{$votesArray[0]['votes']}}</h3>
+                </div>
+                <div class="col-md-4 text-center" >
+                    <h1>{{$votesArray[1]['keyword']}}</h1>
+                    <h3>{{$votesArray[1]['votes']}}</h3>
+                </div>
+                <div class="col-md-4 text-center" >
+                    <h1>{{$votesArray[2]['keyword']}}</h1>
+                    <h3>{{$votesArray[2]['votes']}}</h3>
+                </div>
+                @elseif($boxCount == 4)
+                <div class="col-md-3 text-center" >
+                    <h1>{{$votesArray[0]['keyword']}}</h1>
+                    <h3>{{$votesArray[0]['votes']}}</h3>
+                </div>
+                <div class="col-md-3 text-center" >
+                    <h1>{{$votesArray[1]['keyword']}}</h1>
+                    <h3>{{$votesArray[1]['votes']}}</h3>
+                </div>
+                <div class="col-md-3 text-center" >
+                    <h1>{{$votesArray[2]['keyword']}}</h1>
+                    <h3>{{$votesArray[2]['votes']}}</h3>
+                </div>
+                <div class="col-md-3 text-center" >
+                    <h1>{{$votesArray[3]['keyword']}}</h1>
+                    <h3>{{$votesArray[3]['votes']}}</h3>
+                </div>
+                
+                @endif
+            </div>
+        </div>
     </div>
 
     

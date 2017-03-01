@@ -9,6 +9,7 @@ use App\Models\Campaign;
 use App\Models\FacebookPage;
 use App\Models\LiveVideo;
 use App\Models\Comment;
+use App\Models\Keyword;
 
 use DB;
 
@@ -159,11 +160,44 @@ class CampaignController extends Controller
     public function show($campaignId , Request $request)
     {
         # code...
-       $campaign = Campaign::where('id' , $campaignId)->first()->toArray();
-       $keywords = explode(',', $campaign['keywords']);
-       $boxCount = count($keywords);
-       $liveVideoId = $request->query('liveVideo');
-       $votes = DB::select('SELECT count(comments.keyword_id) as votes, keywords.keyword_name FROM comments,keywords WHERE comments.live_video_id = 1655266587823356 AND comments.keyword_id = keywords.id GROUP BY comments.keyword_id');
-       return view('campaign.live', ['boxCount' => $boxCount , 'votesCount' => $votes , 'imageUrl' => $campaign['image_path']]);
+       $campaign = Campaign::where('id' , $campaignId)->first();
+       if($campaign){
+            //get keywords of this specific campaign
+            $keywords = Keyword::where('campaign_id' , $campaignId)->get();
+            dd($keywords->toArray());
+            $boxCount = count($keywords);
+            $liveVideoId = $request->query('liveVideo');
+            
+            $votes = DB::select('SELECT count(comments.keyword_id) as votes, keywords.keyword_name FROM comments,keywords WHERE comments.live_video_id =  '. $liveVideoId .'  AND comments.keyword_id = keywords.id GROUP BY comments.keyword_id');
+            
+            $votesArray = [];
+            $count = 0;
+            if(count($votes)){ //Not empty and commenting has started
+                foreach($votes as $vote){
+                    $tempArray = array(
+                      'keyword' => $vote->keyword_name,
+                      'votes' => $vote->votes
+                    );
+                    $votesArray[$count] = $tempArray;
+                    $count++;
+                }
+            }
+            else{
+                foreach($keywords as $keyword){
+                    $tempArray = array(
+                      'keyword' => $keyword,
+                      'votes' => 0
+                    );
+                    $votesArray[$count] = $tempArray;
+                    $count++;
+                } 
+            }
+            
+            return view('campaign.live', ['boxCount' => $boxCount , 'votesArray' => $votesArray , 'imageUrl' => $campaign->image_path ]);
+       }
+       else{
+           echo '<center>Whoops! Looks like this campaign is not <b>ACTIVE</b> anymore!</center>';
+       }
+       
    }
 }

@@ -11203,9 +11203,7 @@ var app = new Vue({
   el: '#app'
 });
 
-$(document).ready(function () {
-  alert('zubair mohsin');
-});
+$(document).ready(function () {});
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
