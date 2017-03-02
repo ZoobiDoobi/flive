@@ -130,21 +130,22 @@ class FacebookController extends Controller
     public function assignKeywords($comment)
     {
         # code...
-        $keywords = Keyword::where(['active','live_video_id'] , [1,$comment['live_video_id']])->get()->toArray();
+        $keywords = Keyword::where('live_video_id' , $comment['live_video_id'])->get()->toArray();
+        
         foreach($keywords as $keyword){
-            echo $comment['comment_body'] . " " . $keyword['keyword_name'];
             if(strstr($comment['comment_body'] , $keyword['keyword_name']) !== FALSE){
                 $comment['keyword_id'] = $keyword['id'];
 
             }
         }
+        
         return $comment;
     }
 
     public function cron($value='')
     {
         # code...
-        $liveVideos = LiveVideo::where('active' , 1)->get();
+        $liveVideos = LiveVideo::where('status' , 'live')->get();
         
         foreach($liveVideos as $liveVideo) 
         {
@@ -156,14 +157,15 @@ class FacebookController extends Controller
                 try {
                     $response = $this->fb->get('/' . $liveVideo->live_vidoe_id . '/comments');
                     $comments = $response->getGraphEdge()->asArray();
-                    
+                   
                     //////////////////////////////Saving Comment/////////////////////////////
                     $data = array();
                     $count = 0;
                     foreach ($comments as $comment) 
                     {
+                         
                         //check if comment already exists in our db
-                        if( !$this->commentExists($comment['id'])){
+                        if( !$this->commentExists($comment['id']) && !$this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id)){
                             $data[$count] = array(
                                 'comment_id' => $comment['id'], 
                                 'comment_body' => $comment['message'],
@@ -176,9 +178,6 @@ class FacebookController extends Controller
                             $count++;
                             $data = array_map([$this , 'assignKeywords'], $data);
                             DB::table('comments')->insert($data);
-                        }
-                        else{
-                            
                         }
                     }
 
@@ -201,7 +200,7 @@ class FacebookController extends Controller
         else if($request->isMethod('post')){
             //Below two lines are just for testing purposes
             Storage::disk('local')->put('webhook2.txt', $request->input('entry.0.changes.0.value.id'));
-            Storage::disk('local')->put('webhook2.txt', $request->input('entry.0.changes.0.value.status'));
+            Storage::disk('local')->put('webhook3.txt', $request->input('entry.0.changes.0.value.status'));
             Storage::disk('local')->put('datafile.json', json_encode($request->all()));
             //////////////////////////////////////////////////////////////////////////////////////////
             $liveVideoId = $request->input('entry.0.changes.0.value.id');
@@ -209,12 +208,14 @@ class FacebookController extends Controller
             
             $liveVideo = LiveVideo::where('live_vidoe_id' , $liveVideoId)->first();
             if($liveVideo){
-                if($liveVideoStatus == 'vod'){
+                if($liveVideoStatus == 'live'){
                     $liveVideo->status = $liveVideoStatus;
-                    $liveVideo->active = 0; //this video is not live and we don't want it to be part of cron job
+                    $liveVideo->active = 1; //this video is live and we want to start cron job for this.
+                    $liveVideo->save();
                 }
                 else{
                     $liveVideo->status = $liveVideoStatus;
+                    $liveVideo->active = 0;
                     $liveVideo->save();
                 }
             }
@@ -225,8 +226,10 @@ class FacebookController extends Controller
         return response('OK',200);
     }
     
-    private function commentExists($commentId) {
+    public function commentExists($commentId) {
+        
         $comment = Comment::where('comment_id' , $commentId)->first();
+        
         if($comment){
             return true;
         }
@@ -234,5 +237,17 @@ class FacebookController extends Controller
             return false;
         }
     }
-
+    
+    public function commentAuthorExists($commentAuthorId , $liveVideoId) {
+        
+        $where = ['comment_author_id' => $commentAuthorId , 'live_video_id' => $liveVideoId];
+        $comment = Comment::where($where)->first();
+        
+        if($comment){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }

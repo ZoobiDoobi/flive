@@ -12,16 +12,16 @@
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="campaignName">Campaign Name:</label>
-                            <input type="text" name="campaignName" id="campaignName" class="form-control">
+                            <input type="text" name="campaignName" id="campaignName" class="form-control" required="required">
                         </div>
                         <div class="form-group">
                             <label for="keywords">Keywords:</label>
-                            <input type="text" name="keywords" id="keywords" class="form-control" placeholder="Comma Separated Keywords">
+                            <input data-role="tagsinput" type="text" name="keywords" id="keywords" class="form-control" placeholder="Comma Separated Keywords" required="required">
                         </div>
                         <div class="form-group">
                             <label for="live_video_dropdown">Select the Live Video:</label>
-                            <select name="live_video_dropdown" id="videos" class="form-control" onchange="getSelectedOptionText()">
-                                <option value="0">Select a Live Video</option>
+                            <select name="live_video_dropdown" id="videos" class="form-control" onchange="getSelectedOptionText()" required="required">
+                                <option>Select a Live Video</option>
                                 @foreach($liveVideos as $liveVideo)
                                     <option value="{{ $liveVideo['id']}}" data-status="{{ $liveVideo['status'] }}"> {{ $liveVideo['title'] }} </option>
                                 @endforeach
@@ -36,6 +36,15 @@
                         <button type="submit" class="btn btn-primary">Create Campaign</button>
                     </form>
                 </div>
+                @if (count($errors) > 0)
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
             </div>
         </div>
     </div>

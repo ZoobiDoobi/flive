@@ -25,6 +25,14 @@
             min-height: 200px !important;
             background: white;
         }
+        .col-md-4{
+            min-height: 200px !important;
+            background: white;
+        }
+        .col-md-6{
+            min-height: 200px !important;
+            background: white;
+        }
     </style>
 </head>
 <body style="background: url({{$imageUrl}});">
@@ -56,7 +64,7 @@
             </div>
         </nav>
         <div class="container">
-            <div class="row">
+            <div class="row" style="margin-top: 50px;">
                 @if($boxCount == 2)
                 <div class="col-md-6 text-center" >
                     <h1>{{$votesArray[0]['keyword']}}</h1>

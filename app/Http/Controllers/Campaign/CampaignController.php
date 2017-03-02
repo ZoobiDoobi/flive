@@ -62,40 +62,64 @@ class CampaignController extends Controller
                 dd($fbPage);
             }
         }
+        
+        //We need to get access token of the page and add our app to {page_id}/subscribed_apps endpoint
+        //By sending POST request
+        $token = Session::get('facbook_access_token');
+    	$this->fb->setDefaultAccessToken($token);
+        try{
+            $response = $this->fb->get('/' . $pageId . '?fields=access_token');
+            $response = json_decode($response->getBody());
+            $page_response = $this->fb->post('/' . $pageId . '/subscribed_apps', [] , $response->access_token);
+            
+        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+    		dd($e->getMessage());
+    	}
         /////////////////////////////////////// End Saving Facebook Page Information//////////////////////////////////
 
-    	$token = Session::get('facbook_access_token');
-    	$this->fb->setDefaultAccessToken($token);
 
     	try {
     		$response = $this->fb->get('/' . $pageId . '/live_videos');
+              
     	} catch (Facebook\Exceptions\FacebookSDKException $e) {
     		dd($e->getMessage());
     	}
 
     	$liveVideos = $response->getGraphEdge();
+        
     	$allLiveVideos = array();
     	$count = 0;
     	foreach ($liveVideos as $liveVideo) {
-    		$allLiveVideos[$count] = $liveVideo->asArray();
-    		$count++;
-	    }
+                if($liveVideo->getField('status') === 'SCHEDULED_UNPUBLISHED'){
+                    
+                    $tempArray = $liveVideo->asArray();
+                    if(!array_key_exists('title', $tempArray)){
+                        $tempArray['title'] = $tempArray['id'] . '- Untitled';
+                    }
+                    $allLiveVideos[$count] = $tempArray;
+                    $count++;
+                }
+    		
+	}
+        Session::put('liveVideos', $allLiveVideos);
     	return view('campaign.create', ['liveVideos' => $allLiveVideos]);
     }
 
 
     public function store(Request $request)
-    {
-        # code...
-
-        $campaign = new Campaign;
-        //Move the image file into folder
-        $request->file('bg-image')->move(public_path('uploads'), $request->file('bg-image')->getClientOriginalName());
-
+    {   
         ///////////////////////////////////////////////Saving Campaign Information//////////////////////////////////////
+        $campaign = new Campaign;
         $campaign->campaign_name = $request->input('campaignName');
         $campaign->keywords = $request->input('keywords');
-        $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
+        if($request->file('bg-image')){
+            //Move the image file into folder
+            $request->file('bg-image')->move(public_path('uploads'), $request->file('bg-image')->getClientOriginalName());
+            $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
+        }
+        else{
+            $campaign->image_path = 'https://livotes.com/public/uploads/placeholder.png';
+        }
         $campaign->live_video_id = $request->input('live_video_dropdown');
         $campaign->active = 1; //campaign is currently active
 
@@ -164,11 +188,13 @@ class CampaignController extends Controller
        if($campaign){
             //get keywords of this specific campaign
             $keywords = Keyword::where('campaign_id' , $campaignId)->get();
-            dd($keywords->toArray());
             $boxCount = count($keywords);
             $liveVideoId = $request->query('liveVideo');
             
-            $votes = DB::select('SELECT count(comments.keyword_id) as votes, keywords.keyword_name FROM comments,keywords WHERE comments.live_video_id =  '. $liveVideoId .'  AND comments.keyword_id = keywords.id GROUP BY comments.keyword_id');
+            $votes = DB::select('SELECT keywords.keyword_name , COUNT(comments.keyword_id) as votes from keywords
+                                 LEFT JOIN comments ON comments.keyword_id =keywords.id 
+                                 WHERE keywords.live_video_id = ' . $liveVideoId . '
+                                 GROUP BY keywords.id');
             
             $votesArray = [];
             $count = 0;
@@ -183,16 +209,9 @@ class CampaignController extends Controller
                 }
             }
             else{
-                foreach($keywords as $keyword){
-                    $tempArray = array(
-                      'keyword' => $keyword,
-                      'votes' => 0
-                    );
-                    $votesArray[$count] = $tempArray;
-                    $count++;
-                } 
+               dd($votes);
             }
-            
+           
             return view('campaign.live', ['boxCount' => $boxCount , 'votesArray' => $votesArray , 'imageUrl' => $campaign->image_path ]);
        }
        else{
