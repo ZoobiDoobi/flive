@@ -118,7 +118,7 @@ class CampaignController extends Controller
             $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
         }
         else{
-            $campaign->image_path = 'https://livotes.com/public/uploads/Live-Contest-Looping-Video-love.png';
+            $campaign->image_path = 'https://livotes.com/public/uploads/placeholder.gif';
         }
         $campaign->live_video_id = $request->input('live_video_dropdown');
         $campaign->active = 1; //campaign is currently active
