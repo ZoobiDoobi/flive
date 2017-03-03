@@ -21,7 +21,7 @@
                         <div class="form-group">
                             <label for="live_video_dropdown">Select the Live Video:</label>
                             <select name="live_video_dropdown" id="videos" class="form-control" onchange="getSelectedOptionText()" required="required">
-                                <option>Select a Live Video</option>
+                                <option value="0">Select a Live Video</option>
                                 @foreach($liveVideos as $liveVideo)
                                     <option value="{{ $liveVideo['id']}}" data-status="{{ $liveVideo['status'] }}"> {{ $liveVideo['title'] }} </option>
                                 @endforeach

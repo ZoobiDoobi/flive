@@ -20,6 +20,7 @@ const app = new Vue({
 });
 
 
+//My Apps JavaScript
 $(document).ready(function(){
 	
 });
