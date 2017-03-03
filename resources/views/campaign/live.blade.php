@@ -15,11 +15,7 @@
    <!--  <link href="css/app.css" rel="stylesheet">-->
    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- Scripts -->
-    <script>
-        setTimeout(function(){
-           window.location.reload(1);
-        }, 5000);
-    </script>
+
     <style>
         .col-md-3{
             min-height: 200px !important;
@@ -38,7 +34,7 @@
 <body style=>
     <div id="app">
         <div class="container">
-            <div class="row" style="margin-top: 50px; width: 1280px; height: 720px; background: url({{$imageUrl}});">
+            <div class="row" style="width: 1280px; height: 720px; background: url({{$imageUrl}});">
                 @if($boxCount == 2)
                 <div class="col-md-6 text-center" >
                     <h1>{{$votesArray[0]['keyword']}}</h1>
