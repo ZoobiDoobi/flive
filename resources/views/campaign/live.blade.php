@@ -25,26 +25,26 @@
             min-height: 200px !important;
             color:white;
             margin-top: 550px;
-            padding-left: 50px;
+            
         }
         .col-md-4{
             min-height: 200px !important;
             color:white; 
             margin-top: 550px;
-            padding-left: 50px;
+            
         }
         .col-md-6{
             min-height: 200px !important;
             color:white; 
             margin-top: 550px;
-            padding-left: 100px;  
+              
         }
     </style>
 </head>
-<body style=>
+<body style="background: url({{$imageUrl}});">
     <div id="app">
-        <div class="container" style="margin:0px;">
-            <div class="row" style="width: 1280px; height: 720px; background: url({{$imageUrl}});">
+        <div class="container">
+            <div class="row">
                 @if($boxCount == 2)
                 <div class="col-md-6 text-center" >
                     <h1>{{$votesArray[0]['keyword']}}</h1>
