@@ -9,7 +9,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Livotes') }}</title>
 
     <!-- Styles -->
    <!--  <link href="css/app.css" rel="stylesheet">-->
@@ -23,46 +23,17 @@
     <style>
         .col-md-3{
             min-height: 200px !important;
-            background: white;
         }
         .col-md-4{
-            min-height: 200px !important;
-            background: white;
+            min-height: 200px !important; 
         }
         .col-md-6{
-            min-height: 200px !important;
-            background: white;
+            min-height: 200px !important;   
         }
     </style>
 </head>
 <body style="background: url({{$imageUrl}});">
     <div id="app">
-        <nav class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-
-                    <!-- Collapsed Hamburger -->
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                        <span class="sr-only">Toggle Navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-
-                    <!-- Branding Image -->
-                  <!--   <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Livote') }}
-                    </a> -->
-                </div>
-
-                <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="nav navbar-nav">
-                        &nbsp;
-                    </ul>
-                </div>
-            </div>
-        </nav>
         <div class="container">
             <div class="row" style="margin-top: 50px;">
                 @if($boxCount == 2)
