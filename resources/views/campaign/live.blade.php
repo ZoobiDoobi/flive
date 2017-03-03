@@ -15,22 +15,29 @@
    <!--  <link href="css/app.css" rel="stylesheet">-->
    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- Scripts -->
-
+        <script>
+        setTimeout(function(){
+           window.location.reload(1);
+        }, 5000);
+    </script>
     <style>
         .col-md-3{
             min-height: 200px !important;
             color:white;
             margin-top: 550px;
+            padding-left: 50px;
         }
         .col-md-4{
             min-height: 200px !important;
             color:white; 
             margin-top: 550px;
+            padding-left: 50px;
         }
         .col-md-6{
             min-height: 200px !important;
             color:white; 
-            margin-top: 550px;  
+            margin-top: 550px;
+            padding-left: 100px;  
         }
     </style>
 </head>
