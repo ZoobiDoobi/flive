@@ -131,11 +131,12 @@ class FacebookController extends Controller
     {
         # code...
         $keywords = Keyword::where('live_video_id' , $comment['live_video_id'])->get()->toArray();
-        
-        foreach($keywords as $keyword){
-            if(strstr($comment['comment_body'] , $keyword['keyword_name']) !== FALSE){
-                $comment['keyword_id'] = $keyword['id'];
+        $commentBody = strtolower($comment['comment_body']);
 
+        foreach($keywords as $keyword){
+            $keywordBody = strtolower($keyword['keyword_name']);
+            if(strstr($commentBody , $keywordBody) !== FALSE){
+                $comment['keyword_id'] = $keyword['id'];
             }
         }
         

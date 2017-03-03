@@ -144,7 +144,7 @@ class CampaignController extends Controller
         foreach ($keywords as $keyword) {
             # code...
             $data[$count] = array(
-                'keyword_name' => $keyword , 
+                'keyword_name' => trim($keyword), 
                 'campaign_id' => Session::get('campaign_id') ,
                 'local_user_id' => Session::get('local_user_id'),
                 'live_video_id' => Session::get('live_video_id'),
