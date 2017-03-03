@@ -20,20 +20,23 @@
         .col-md-3{
             min-height: 200px !important;
             color:white;
+            margin-top: 550px;
         }
         .col-md-4{
             min-height: 200px !important;
             color:white; 
+            margin-top: 550px;
         }
         .col-md-6{
             min-height: 200px !important;
-            color:white;   
+            color:white; 
+            margin-top: 550px;  
         }
     </style>
 </head>
 <body style=>
     <div id="app">
-        <div class="container">
+        <div class="container" style="margin:0px;">
             <div class="row" style="width: 1280px; height: 720px; background: url({{$imageUrl}});">
                 @if($boxCount == 2)
                 <div class="col-md-6 text-center" >
