@@ -11,8 +11,14 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-     <link href="{{asset('css/app.css')}}" rel="stylesheet">
-   <!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <!--     <link href="{{asset('css/app.css')}}" rel="stylesheet">-->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/alertify.min.css"/>
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/bootstrap.min.css"/>
+    <link href="{{asset('css/bootstrap-tagsinput.css')}}" rel="stylesheet">
+    <link href="{{asset('css/mystyles.css')}}" rel="stylesheet">
     <!-- Scripts -->
     <script>
         window.Laravel = {!! json_encode([
@@ -55,7 +61,12 @@
     
 
     <!-- Scripts -->
-    <script src="{{asset('js/app.js')}}"></script>
+    <!--<script src="{{asset('js/app.js')}}"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/alertifyjs/1.9.0/alertify.min.js"></script>
+    <script src="{{asset('js/bootstrap-tagsinput.min.js')}}"></script>
+    <script src="{{asset('js/myjs.js')}}"></script>
     @yield('js-section')
 </body>
 </html>

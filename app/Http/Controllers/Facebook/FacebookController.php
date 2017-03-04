@@ -199,11 +199,6 @@ class FacebookController extends Controller
             }
         }
         else if($request->isMethod('post')){
-            //Below two lines are just for testing purposes
-            Storage::disk('local')->put('webhook2.txt', $request->input('entry.0.changes.0.value.id'));
-            Storage::disk('local')->put('webhook3.txt', $request->input('entry.0.changes.0.value.status'));
-            Storage::disk('local')->put('datafile.json', json_encode($request->all()));
-            //////////////////////////////////////////////////////////////////////////////////////////
             $liveVideoId = $request->input('entry.0.changes.0.value.id');
             $liveVideoStatus = $request->input('entry.0.changes.0.value.status');
             

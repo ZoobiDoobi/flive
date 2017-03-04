@@ -21,4 +21,5 @@ Route::get('campaign/{id}','Campaign\CampaignController@show')->name('campaign_l
 Route::get('facebook/test', 'Facebook\FacebookController@test');
 Route::get('facebook/cron', 'Facebook\FacebookController@cron');
 Route::get('/home', 'Home\HomeController@index');
+Route::post('home/campaign', 'Home\HomeController@campaign');
 Route::get('facebook/keywords' , 'Facebook\FacebookController@assignKeywords');
