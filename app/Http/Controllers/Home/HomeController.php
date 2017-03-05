@@ -17,7 +17,17 @@ class HomeController extends Controller
     public function campaign(Request $request) {
         
         $errors = [];
-        $data = [];
+        $data = ['success' => true , 'response' => $request->all()];
+        
+        return response()->json($data);
+        if($request->input('files')){
+            $this->validate($request, [
+               'bg-image' => 'mimes:jpeg,gif,png' 
+            ]);
+        }
+        //Image is valid, store it in uploads folder and copy its path to DB
+        $imageFile = $request->input('files')->move(public_path('uploads'), $request->input('bg-image'));
+        
         $campaignName = $request->input('campaignName');
         
         if(empty($campaignName)){
@@ -33,5 +43,10 @@ class HomeController extends Controller
             $data['message'] = 'success';
         }
         return response()->json($data);
+    }
+    
+    public function imageUpload(Request $request){
+        
+        return response()->json('success' , 200);
     }
 }

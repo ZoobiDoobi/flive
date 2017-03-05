@@ -11,7 +11,7 @@
                     <div id="loading">
                         <img src="{{asset('images/spin.gif')}}">
                     </div>                
-                    <form id="campaignForm">
+                    <form id="campaignFormDropZone" enctype="multipart/form-data" method="post">
                         <div class="form-group">
                             <label for="campaignName">Campaign Name</label>
                             <input type="text" name="campaignName" id="campaignName" class="form-control">
@@ -27,6 +27,12 @@
                                 <option value="134234">LIVE VIDEO 1</option>
                                 <option value="134234">LIVE VIDEO 1</option>
                             </select>
+                            
+                        </div>
+                        <div id="myAwesomeDropzone">
+                            
+                        </div>
+                        <div id="dropZonePreview">
                             
                         </div>
                         <div class="form-group">

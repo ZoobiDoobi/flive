@@ -17,9 +17,16 @@ Route::get('pages/index', 'Facebook\FacebookPageController@Index');
 Route::match(['get','post'] , 'facebook/webhook','Facebook\FacebookController@Webhook');
 Route::post('campaign/create' , 'Campaign\CampaignController@create');
 Route::post('campaign/store', 'Campaign\CampaignController@store');
-Route::get('campaign/{id}','Campaign\CampaignController@show')->name('campaign_live');
+Route::get('campaign/{id}' , 'Campaign\CampaignController@show');
 Route::get('facebook/test', 'Facebook\FacebookController@test');
 Route::get('facebook/cron', 'Facebook\FacebookController@cron');
 Route::get('/home', 'Home\HomeController@index');
 Route::post('home/campaign', 'Home\HomeController@campaign');
 Route::get('facebook/keywords' , 'Facebook\FacebookController@assignKeywords');
+Route::post('home/imageupload' , 'Home\HomeController@imageUpload');
+
+
+Route::get('campaign' , 'Campaign\CampaignController@index');
+Route::post('campaign/saveFacebookPage' , 'Campaign\CampaignController@saveFacebookPage');
+//Route::get('campaign/getLiveVideos' , 'Campaign\CampaignController@getLiveVideos');
+Route::get('liveVideo/get' , 'LiveVideo\LiveVideosController@getLiveVideos');

@@ -5,4 +5,13 @@
     display: none;
     text-align: center;
 }
-
+#createCampaignPanel{
+    display: none;
+}
+#campaignUrl{
+    display: none;
+}
+#campaignloading{
+    display: none;
+    text-align: center;
+}

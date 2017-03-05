@@ -23,19 +23,42 @@ class CampaignController extends Controller
 	{
 		$this->fb = $fb;
 	}
-    //
-    public function create(Request $request)
+    
+    public function index($value='')
     {
-    	# code...
-    	$pageId = $request->input('pages-dropdown');
+        //Include these lines to each script which makes a call to Graph API
+        $accessToken = Session::get('facbook_access_token');
+        $this->fb->setDefaultAccessToken($accessToken);
+
+        //Fetch the pages that this user manages
+        $userId = Session::get('fb_user_id');
+        try {
+            $response = $this->fb->get('/'.$userId.'/accounts');
+        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            dd($e->getMessage());
+        }
+
+        $pagesEdge = $response->getGraphEdge();
+        $allPagesOfUser = [];
+        $count = 0;
+        foreach ($pagesEdge as $page) {
+            $allPagesOfUser[$count] = $page->asArray();
+            $count++;
+        }
+        return view('campaign.campaign' , ['pages' => $allPagesOfUser]);
+    }
+    
+    public function saveFacebookPage(Request $request) {
+        
+        $data = [];
+        $errors = [];
+        
+        $pageId = $request->input('pages-dropdown');
         $pageName = $request->input('pageName');
         Session::put('fb_page_id' , $pageId);
-
-        /////////////////////////////////////////////////////Saving Facebook Page Information///////////////////////
-        //Right now, I am doing this here for Initial prototype, but I will move it to proper controller and function
-        //and also through gets submitted from AJAX 
+        
         $fbPage = FacebookPage::where('fb_page_id',$pageId)->first();
-
+        
         if(! $fbPage ){
             //this facebook page does not exist already in our database
             $fbPage = new FacebookPage;
@@ -44,10 +67,10 @@ class CampaignController extends Controller
             $fbPage->fb_user_id = Session::get('fb_user_id');
             $fbPage->active = 1;
             if($fbPage->save()){
-
+                $data['success'] = true;
             }
             else{
-                dd($fbPage);
+                $errors['fbPage'] = 'We are having Difficulty Saving Your Facebook Page!';
             }
         }
         else{
@@ -56,138 +79,47 @@ class CampaignController extends Controller
             $fbPage->fb_user_id = Session::get('fb_user_id');
             $fbPage->active = 1;
             if($fbPage->save()){
-
+                $data['success'] = true;
             }
             else{
-                dd($fbPage);
+                $errors['fbPage'] = 'We are having Difficulty Saving Your Facebook Page!';
             }
         }
-        
         //We need to get access token of the page and add our app to {page_id}/subscribed_apps endpoint
         //By sending POST request
         $token = Session::get('facbook_access_token');
     	$this->fb->setDefaultAccessToken($token);
+        
         try{
             $response = $this->fb->get('/' . $pageId . '?fields=access_token');
             $response = json_decode($response->getBody());
             $page_response = $this->fb->post('/' . $pageId . '/subscribed_apps', [] , $response->access_token);
-            
+            $pageResponseBody = $page_response->decodeBody();
+            if($pageResponseBody['success']){
+                $data['subscription'] = true;
+            }
+            else{
+                $errors['subscriptionError'] = "Your selected page couldn't subscribe our App, Make sure you have proper Administrative Rights for this page";
+            }
         } catch (Facebook\Exceptions\FacebookSDKException $e) {
     		dd($e->getMessage());
     	}
-        /////////////////////////////////////// End Saving Facebook Page Information//////////////////////////////////
-
-
-    	try {
-    		$response = $this->fb->get('/' . $pageId . '/live_videos');
-              
-    	} catch (Facebook\Exceptions\FacebookSDKException $e) {
-    		dd($e->getMessage());
-    	}
-
-    	$liveVideos = $response->getGraphEdge();
-        
-    	$allLiveVideos = array();
-    	$count = 0;
-    	foreach ($liveVideos as $liveVideo) {
-                if($liveVideo->getField('status') === 'SCHEDULED_UNPUBLISHED'){
-                    
-                    $tempArray = $liveVideo->asArray();
-                    if(!array_key_exists('title', $tempArray)){
-                        $tempArray['title'] = $tempArray['id'] . '- Untitled';
-                    }
-                    $allLiveVideos[$count] = $tempArray;
-                    $count++;
-                }
-    		
-	}
-        Session::put('liveVideos', $allLiveVideos);
-    	return view('campaign.create', ['liveVideos' => $allLiveVideos]);
+        $data['errors'] = $errors;
+        return response()->json($data);
     }
+    
 
-
-    public function store(Request $request)
-    {   
-        ///////////////////////////////////////////////Saving Campaign Information//////////////////////////////////////
-        $campaign = new Campaign;
-        $campaign->campaign_name = $request->input('campaignName');
-        $campaign->keywords = $request->input('keywords');
-        if($request->file('bg-image')){
-            //Move the image file into folder
-            $request->file('bg-image')->move(public_path('uploads'), $request->file('bg-image')->getClientOriginalName());
-            $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
-        }
-        else{
-            $campaign->image_path = 'https://livotes.com/public/uploads/placeholder.gif';
-        }
-        $campaign->live_video_id = $request->input('live_video_dropdown');
-        $campaign->active = 1; //campaign is currently active
-
-        Session::put('live_video_id',$request->input('live_video_dropdown')); 
-
-
-        if($campaign->save()){
-            //get the id of campaign and make a url
-            $campaignId = $campaign->id;
-            Session::put('campaign_id' , $campaignId);
-        }
-        else{
-            dd($campaign);
-        }
-        ///////////////////////////////////////////////End Saving Campaign Information//////////////////////////////////////
-
-        ///////////////////////////////////////////////Start Saving Keywords Information//////////////////////////////////////
-        $keywords = explode(',' , $request->input('keywords'));
-        $count = 0;
-        //Unfortunately, i don't know how to do multiple inserts with Eloquent, quite yet! so I will be using query builder here
-        $data = array();
-        foreach ($keywords as $keyword) {
-            # code...
-            $data[$count] = array(
-                'keyword_name' => trim($keyword), 
-                'campaign_id' => Session::get('campaign_id') ,
-                'local_user_id' => Session::get('local_user_id'),
-                'live_video_id' => Session::get('live_video_id'),
-                'active' => 1
-                );
-            $count++;
-        }
-
-        DB::table('keywords')->insert($data);
-        ///////////////////////////////////////////////End Saving Keywords Information//////////////////////////////////////
-
-
-        ///////////////////////////////////////////////Start Saving Live Video Information//////////////////////////////////////
-        $liveVideo = new LiveVideo;
-        $liveVideo->live_vidoe_id = Session::get('live_video_id'); //this is a spelling mistake in database
-        $liveVideo->live_video_name = $request->input('liveVideoName');
-        $liveVideo->active = 1;
-        $liveVideo->fb_user_id = Session::get('fb_user_id');
-        $liveVideo->fb_page_id = Session::get('fb_page_id');
-        $liveVideo->status = $request->input('liveVideoStatus');
-        if($liveVideo->save()){
-
-        }
-        else{
-            dd($liveVideo);
-        }
-        ///////////////////////////////////////////////End Saving Live Video Information//////////////////////////////////////
-
-        $campaignUrl = action('Campaign\CampaignController@show', ['id' => Session::get('campaign_id')]);
-        $campaignUrl .= '/?liveVideo=' . Session::get('live_video_id');
-        return view('campaign.liveurl' , ['campaignUrl' => $campaignUrl]);
-        //$responseArray  = array('success' => true ,  'url' => $campaignUrl);
-        //echo json_encode($responseArray, JSON_UNESCAPED_SLASHES); //this will be helpful for ajax
-
-    }
-
+    
+    
     public function show($campaignId , Request $request)
     {
         # code...
        $campaign = Campaign::where('id' , $campaignId)->first();
        if($campaign){
+           
             //get keywords of this specific campaign
             $keywords = Keyword::where('campaign_id' , $campaignId)->get();
+
             $boxCount = count($keywords);
             $liveVideoId = $request->query('liveVideo');
             
@@ -216,7 +148,82 @@ class CampaignController extends Controller
        }
        else{
            echo '<center>Whoops! Looks like this campaign is not <b>ACTIVE</b> anymore!</center>';
-       }
+       }   
+   }
+   
+   public function store(Request $request){
+       $data = [];
+       $errors = [];
+       $campaignUrl = '';
+        
+       $campaign = new Campaign;
+        if(! $request->input('campaignName')){
+            $errors['campaignName'] = 'Campaign Name is Required!';
+        }
+        else{
+            $campaign->campaign_name = $request->input('campaignName');
+        }
+        if(count($request->input('keywords')) > 4){
+            $errors['keywords'] = 'Keyowrds cannot be more than 4';
+        }
+        else{
+            $campaign->keywords = $request->input('keywords');
+            
+        }
+        if($request->file('bg-image')){
+            //Move the image file into folder
+            $request->file('bg-image')->move(public_path('uploads'), $request->file('bg-image')->getClientOriginalName());
+            $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
+        }
+        else{
+            $campaign->image_path = 'https://livotes.com/public/uploads/placeholder.gif';
+        }
+        
+        $campaign->live_video_id = $request->input('live_video_dropdown');
+        $campaign->active = 1; //campaign is currently active
+
+        Session::put('live_video_id',$request->input('live_video_dropdown'));
+        
+        if($campaign->save()){
+            //get the id of campaign and make a url
+            $campaignId = $campaign->id;
+            Session::put('campaign_id' , $campaignId);
+            $this->storeKeywords($request->input('keywords'));
+            $campaignUrl = action('Campaign\CampaignController@show', ['id' => Session::get('campaign_id')]);
+            $campaignUrl .= '/?liveVideo=' . Session::get('live_video_id');
+        }
+        else{
+            $errors['campaignSave'] = 'We are having trouble saving Campaign!';
+        }
+        if(count($errors)){
+            $data['errors'] = $errors;
+        }
+        else{
+            $data['success'] = true;
+            $data['url'] = $campaignUrl;
+        }
+
+        echo json_encode($data , JSON_UNESCAPED_SLASHES);
+   }
+   
+   private function storeKeywords($keywords) {
        
+        $keywords = explode(',' , $keywords);
+        $count = 0;
+        //Unfortunately, i don't know how to do multiple inserts with Eloquent, quite yet! so I will be using query builder here
+        $data = array();
+        foreach ($keywords as $keyword) {
+            # code...
+            $data[$count] = array(
+                'keyword_name' => trim($keyword), 
+                'campaign_id' => Session::get('campaign_id') ,
+                'local_user_id' => Session::get('local_user_id'),
+                'live_video_id' => Session::get('live_video_id'),
+                'active' => 1
+                );
+            $count++;
+        }
+
+        DB::table('keywords')->insert($data);     
    }
 }

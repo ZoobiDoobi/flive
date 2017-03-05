@@ -87,6 +87,7 @@ class FacebookController extends Controller
 
         //Save the user to database, if it already exists,otherwise update it
          $user = User::where('facebook_user_id', $userNode->getId())->first();
+
          if( ! $user)
          {  //User does not exist
             $user = new User;
@@ -97,7 +98,7 @@ class FacebookController extends Controller
             $user->active = 1;
             if($user->save()){
                 Session::put('local_user_id', $user->id);
-                return redirect('pages/index');
+                return redirect('campaign');
             }
             else{
                 dd($user);
@@ -111,7 +112,7 @@ class FacebookController extends Controller
             $user->active = 1;
             if($user->save()){
                 Session::put('local_user_id', $user->id);
-                return redirect('pages/index');
+                return redirect('campaign');
             }
             else{
                 dd($user);
