@@ -125,7 +125,7 @@ class CampaignController extends Controller
             
             $votes = DB::select('SELECT keywords.keyword_name , COUNT(comments.keyword_id) as votes from keywords
                                  LEFT JOIN comments ON comments.keyword_id =keywords.id 
-                                 WHERE keywords.live_video_id = ' . $liveVideoId . '
+                                 WHERE keywords.campaign_id = ' . $campaignId . '
                                  GROUP BY keywords.id');
             
             $votesArray = [];
