@@ -79,8 +79,8 @@ class LiveVideosController extends Controller
                 $liveVideoDb->live_vidoe_id = $liveVideo['id']; //this is a spelling mistake in database
                 $liveVideoDb->live_video_name = $liveVideo['title'];
                 $liveVideoDb->active = 1;
-                $liveVideoDb->fb_user_id = $fbPageId;
-                $liveVideoDb->fb_page_id = Session::get('fb_page_id');
+                $liveVideoDb->fb_user_id = Session::get('fb_user_id');
+                $liveVideoDb->fb_page_id = $fbPageId;
                 $liveVideoDb->status = $liveVideo['status'];
                 $liveVideoDb->save();
             }
