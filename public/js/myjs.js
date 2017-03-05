@@ -1,7 +1,7 @@
 //My Apps JavaScript
 $(document).ready(function(){
     
-    var endPointUrl = 'http://mobuzzasia.com/livotes/';
+    var endPointUrl = 'http://livotes.com/';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
