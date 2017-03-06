@@ -15,3 +15,14 @@
     display: none;
     text-align: center;
 }
+#loginUrl{
+    background: #337AB7;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 20px;
+    border-radius: 5px;
+}
+#loginUrl:hover{
+    text-decoration: none;
+}
