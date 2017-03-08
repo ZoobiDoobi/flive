@@ -165,9 +165,15 @@ class FacebookController extends Controller
                     $count = 0;
                     foreach ($comments as $comment) 
                     {
+                        echo 'Outside if <br>';
+                            echo $this->commentExists($comment['id']) .'<br>';
+                            echo $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id) . '<br>';
                          
                         //check if comment already exists in our db
                         if( !$this->commentExists($comment['id']) && !$this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id)){
+                            echo 'Inside if <br>';
+                            echo $this->commentExists($comment['id']) .'<br>';
+                            echo $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id) . '<br>';
                             $data[$count] = array(
                                 'comment_id' => $comment['id'], 
                                 'comment_body' => $comment['message'],

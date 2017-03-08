@@ -1,7 +1,7 @@
 //My Apps JavaScript
 $(document).ready(function(){
     
-    var endPointUrl = 'http://livotes.com/';
+    var endPointUrl = 'https://livotes.com/';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -130,38 +130,5 @@ $(document).ready(function(){
             $('#campaignloading').css('display' , 'none');
         });
     });
-// Tooltip
-
-$('#clipBoardButton').tooltip({
-  trigger: 'click',
-  placement: 'bottom'
-});
-
-function setTooltip(btn, message) {
-  $(btn).tooltip('hide')
-    .attr('data-original-title', message)
-    .tooltip('show');
-}
-
-function hideTooltip(btn) {
-  setTimeout(function() {
-    $(btn).tooltip('hide');
-  }, 1000);
-}
-
-// Clipboard
-
-var clipboard = new Clipboard('button');
-
-clipboard.on('success', function(e) {
-  setTooltip(e.trigger, 'Copied!');
-  hideTooltip(e.trigger);
-});
-
-clipboard.on('error', function(e) {
-  setTooltip(e.trigger, 'Failed!');
-  hideTooltip(e.trigger);
-}); 
-});
 
 

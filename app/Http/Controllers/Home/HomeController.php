@@ -49,4 +49,10 @@ class HomeController extends Controller
         
         return response()->json('success' , 200);
     }
+
+    public function privacy(Request $request)
+    {
+        # code...
+        return view('home.privacy');
+    }
 }
