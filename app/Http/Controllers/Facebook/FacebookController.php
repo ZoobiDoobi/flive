@@ -159,8 +159,9 @@ class FacebookController extends Controller
                 try {
                     $response = $this->fb->get('/' . $liveVideo->live_vidoe_id . '/comments');
                     $comments = $response->getGraphEdge()->asArray();
+                    echo '<pre>';
                     print_r($comments);
-                   
+                    echo '</pre>';
                     //////////////////////////////Saving Comment/////////////////////////////
                     $data = array();
                     $count = 0;
@@ -171,8 +172,12 @@ class FacebookController extends Controller
                             echo $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id) . '<br>';
                          
                         //check if comment already exists in our db
-                        if( !$this->commentExists($comment['id']) && !$this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id)){
-                            echo 'Inside if <br>';
+                        if( $this->commentExists($comment['id']) && $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id)){
+                            echo 'this comment already exists and this author has already commented on this live video!';
+                        }
+                        else{
+                            //this comment does not exist so put it in database please!
+                            echo 'Inside else <br>';
                             echo $this->commentExists($comment['id']) .'<br>';
                             echo $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id) . '<br>';
                             $data[$count] = array(
@@ -187,9 +192,6 @@ class FacebookController extends Controller
                             $count++;
                             $data = array_map([$this , 'assignKeywords'], $data);
                             DB::table('comments')->insert($data);
-                        }
-                        else{
-                            echo 'all conditions are false!';
                         }
                     }
 
