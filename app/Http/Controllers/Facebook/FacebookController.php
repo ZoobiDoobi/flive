@@ -159,6 +159,7 @@ class FacebookController extends Controller
                 try {
                     $response = $this->fb->get('/' . $liveVideo->live_vidoe_id . '/comments');
                     $comments = $response->getGraphEdge()->asArray();
+                    print_r($comments);
                    
                     //////////////////////////////Saving Comment/////////////////////////////
                     $data = array();
