@@ -170,8 +170,8 @@ class FacebookController extends Controller
                         //check if comment already exists in our db
                         $commentExist = $this->commentExists($comment['id']);
                         $authorExist = $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id);
-                        if( $commentExist && $authorExist){
-                            echo 'this comment already exists and this author has already commented on this live video!<br>';
+                        if( $commentExist || $authorExist){
+                            echo 'this comment already exists  this author has already commented on this live video!<br>';
                         }
                         else{
                             //this comment does not exist so put it in database please!
