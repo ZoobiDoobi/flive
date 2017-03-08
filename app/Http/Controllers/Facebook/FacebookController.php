@@ -188,6 +188,9 @@ class FacebookController extends Controller
                             $data = array_map([$this , 'assignKeywords'], $data);
                             DB::table('comments')->insert($data);
                         }
+                        else{
+                            echo 'all conditions are false!';
+                        }
                     }
 
                 } catch (Exception $e) {
