@@ -159,9 +159,7 @@ class FacebookController extends Controller
                 try {
                     $response = $this->fb->get('/' . $liveVideo->live_vidoe_id . '/comments');
                     $comments = $response->getGraphEdge()->asArray();
-                    echo '<pre>';
-                    print_r($comments);
-                    echo '</pre>';
+
                     //////////////////////////////Saving Comment/////////////////////////////
                     $data = array();
                     $count = 0;
@@ -171,11 +169,10 @@ class FacebookController extends Controller
                         $commentExist = $this->commentExists($comment['id']);
                         $authorExist = $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id);
                         if( $commentExist || $authorExist){
-                            echo 'this comment already exists  this author has already commented on this live video!<br>';
+
                         }
                         else{
-                            //this comment does not exist so put it in database please!
-                            echo 'This comment does not exist so inserting it!<br>';
+
                             $data[$count] = array(
                                 'comment_id' => $comment['id'], 
                                 'comment_body' => $comment['message'],
