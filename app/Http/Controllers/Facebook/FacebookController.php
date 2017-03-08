@@ -166,20 +166,14 @@ class FacebookController extends Controller
                     $data = array();
                     $count = 0;
                     foreach ($comments as $comment) 
-                    {
-                        echo 'Outside if <br>';
-                            echo $this->commentExists($comment['id']) .'<br>';
-                            echo $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id) . '<br>';
-                         
+                    {    
                         //check if comment already exists in our db
                         if( $this->commentExists($comment['id']) && $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id)){
-                            echo 'this comment already exists and this author has already commented on this live video!';
+                            echo 'this comment already exists and this author has already commented on this live video!<br>';
                         }
                         else{
                             //this comment does not exist so put it in database please!
-                            echo 'Inside else <br>';
-                            echo $this->commentExists($comment['id']) .'<br>';
-                            echo $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id) . '<br>';
+                            echo 'This comment does not exist so inserting it!<br>';
                             $data[$count] = array(
                                 'comment_id' => $comment['id'], 
                                 'comment_body' => $comment['message'],
