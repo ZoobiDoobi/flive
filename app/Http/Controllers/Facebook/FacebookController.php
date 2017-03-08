@@ -168,7 +168,9 @@ class FacebookController extends Controller
                     foreach ($comments as $comment) 
                     {    
                         //check if comment already exists in our db
-                        if( $this->commentExists($comment['id']) && $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id)){
+                        $commentExist = $this->commentExists($comment['id']);
+                        $authorExist = $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id);
+                        if( $commentExist && $authorExist){
                             echo 'this comment already exists and this author has already commented on this live video!<br>';
                         }
                         else{
@@ -229,11 +231,13 @@ class FacebookController extends Controller
         return response('OK',200);
     }
     
-    public function commentExists($commentId) {
+    public function commentExists($commentId) 
+    {
         
         $comment = Comment::where('comment_id' , $commentId)->first();
         
         if($comment){
+
             return true;
         }
         else{
@@ -241,7 +245,8 @@ class FacebookController extends Controller
         }
     }
     
-    public function commentAuthorExists($commentAuthorId , $liveVideoId) {
+    public function commentAuthorExists($commentAuthorId , $liveVideoId) 
+    {
         
         $where = ['comment_author_id' => $commentAuthorId , 'live_video_id' => $liveVideoId];
         $comment = Comment::where($where)->first();
