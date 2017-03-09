@@ -16,6 +16,9 @@
                         <span class="loading-message"></span>
                     </div>
                     <table id="campaigns" class="display" cellspacing="0" width="100%">
+                        <th>Campaign Name</th>
+                        <th>Live Video Name</th>
+                        <th>Campaign URL</th>
                     </table>
                 </div>
             </div>
@@ -45,10 +48,10 @@
 
                 $('#campaigns').DataTable({
                     data : data,
-                    columns: [
+                    "columns" :[
                         { "data": "campaign_name" },
                         { "data": "live_video_name" },
-                        { "data": "campaign_url" }
+                        { "data": "campaign_url" },
                     ]
                 });
             }).fail(function(data, textStatus, errorThrown){
