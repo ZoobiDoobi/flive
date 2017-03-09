@@ -16,9 +16,11 @@
                         <span class="loading-message"></span>
                     </div>
                     <table id="campaigns" class="display" cellspacing="0" width="100%">
-                        <th>Campaign Name</th>
-                        <th>Live Video Name</th>
-                        <th>Campaign URL</th>
+                        <thead>
+                            <th>Campaign Name</th>
+                            <th>Live Video Name</th>
+                            <th>Campaign URL</th>
+                        </thead>
                     </table>
                 </div>
             </div>
