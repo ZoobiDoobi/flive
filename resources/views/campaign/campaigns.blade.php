@@ -33,7 +33,7 @@
     <script>
         $(document).ready(function() {
             var endPointUrl = $('#appUrl');
-            $('#example').DataTable( {
+            $('#campaigns').DataTable( {
                 "ajax": endPointUrl + 'campaign/get'
             } );
         } );
