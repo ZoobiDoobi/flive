@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/bootstrap.min.css"/>
     <link href="{{asset('css/bootstrap-tagsinput.css')}}" rel="stylesheet">
     <link href="{{asset('css/mystyles.css')}}" rel="stylesheet">
+    @yield('css-section')
     <!-- Scripts -->
     <script>
         window.Laravel = {!! json_encode([
