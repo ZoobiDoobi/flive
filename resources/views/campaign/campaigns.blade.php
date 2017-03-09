@@ -11,6 +11,10 @@
             <div class="panel panel-primary">
                 <div class="panel-heading text-center"><h2>ALL CAMPAIGNS</h2></div>
                 <div class="panel-body text-center">
+                    <div id="loading">
+                        <img src="{{asset('images/spin.gif')}}">
+                        <span class="loading-message"></span>
+                    </div>
                     <table id="campaigns" class="display" cellspacing="0" width="100%">
                         <thead>
                         <tr>
@@ -32,10 +36,27 @@
     <script src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            var endPointUrl = $('#appUrl');
-            $('#campaigns').DataTable( {
-                "ajax": endPointUrl + 'campaign/get'
-            } );
+            $.ajax({
+                url : endPointUrl + 'campaign/get',
+                method : 'GET',
+                dataType : 'json',
+                beforeSend : function(){
+                    $('#loading').css('display' , 'block');
+                    $('#campaigns').css('display' , 'none');
+                }
+            }).done(function(data , textStatus, jqXHR){
+                ('#loading').css('display' , 'none');
+                $('#campaigns').css('display' , 'block');
+                $('#campaigns').DataTable({
+                    data : data
+                });
+            }).fail(function(data, textStatus, errorThrown){
+                ('#loading').css('display' , 'none');
+                $('#campaigns').css('display' , 'block');
+                console.log(errorThrown);
+            }).always(function(data, textStatus, jqXHR){
+                ('#loading').css('display' , 'none');
+            });
         } );
     </script>
 @stop
