@@ -140,7 +140,6 @@ class FacebookController extends Controller
                 $comment['keyword_id'] = $keyword['id'];
             }
         }
-        
         return $comment;
     }
 
@@ -184,7 +183,10 @@ class FacebookController extends Controller
                                 );
                             $count++;
                             $data = array_map([$this , 'assignKeywords'], $data);
-                            DB::table('comments')->insert($data);
+                            $filteredData = array_filter($data , function($element){
+                                return !is_null($element['keyword_id']);
+                            });
+                            DB::table('comments')->insert($filteredData);
                         }
                     }
 
@@ -254,5 +256,11 @@ class FacebookController extends Controller
         else{
             return false;
         }
+    }
+
+    public function keywordsExists($liveVideoId)
+    {
+        # code...
+        $keywords = Keyword::where()
     }
 }
