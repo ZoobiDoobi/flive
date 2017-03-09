@@ -46,9 +46,9 @@
                 $('#campaigns').DataTable({
                     data : data,
                     columns: [
-                        { title: "Campaign Name" },
-                        { title: "Live Video Name" },
-                        { title: "Campaign URL" }
+                        { "data": "campaign_name" },
+                        { "data": "live_video_name" },
+                        { "data": "campaign_url" }
                     ]
                 });
             }).fail(function(data, textStatus, errorThrown){
