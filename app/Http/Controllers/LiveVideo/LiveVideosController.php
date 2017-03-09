@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Session;
 use App\Models\LiveVideo;
+use App\Models\Campaign;
 
 class LiveVideosController extends Controller
 {
@@ -40,15 +41,21 @@ class LiveVideosController extends Controller
                 if($liveVideo->getField('status') === 'SCHEDULED_UNPUBLISHED'){
                     
                     $tempArray = $liveVideo->asArray();
-                    if(!array_key_exists('title', $tempArray)){
-                        $tempArray['title'] = $tempArray['id'] . '- Untitled';
+
+                    if(!$this->usedInCampaign($tempArray['id'])){
+
+                        if(!array_key_exists('title', $tempArray)){ //If user somehows skipped the title
+                            $tempArray['title'] = $tempArray['id'] . '- Untitled';
+                        }
+
+                        $allLiveVideos[$count] = $tempArray;
+                        $count++;
                     }
-                    $allLiveVideos[$count] = $tempArray;
-                    $count++;
+                    
                 }	
 	}
         if(count($allLiveVideos) <= 0){
-            $errors['noLiveVideos'] = 'There are no Scheduled Live Videos On Your Page!';
+            $errors['noLiveVideos'] = 'No Schedule Video On Your Page OR<br>All Scheduled Videos have been used in Campaigns!';
         }
         else{
             $data['success'] = true;
@@ -84,6 +91,19 @@ class LiveVideosController extends Controller
                 $liveVideoDb->status = $liveVideo['status'];
                 $liveVideoDb->save();
             }
+        }
+    }
+
+    private function usedInCampaign($liveVideoId){
+
+        //A campaign with this Live Video has already been created
+        $campaign = Campaign::where('live_video_id' , $liveVideoId)->first();
+
+        if($campaign){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 }
