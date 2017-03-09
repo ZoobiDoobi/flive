@@ -31,3 +31,4 @@ Route::post('campaign/saveFacebookPage' , 'Campaign\CampaignController@saveFaceb
 //Route::get('campaign/getLiveVideos' , 'Campaign\CampaignController@getLiveVideos');
 Route::get('liveVideo/get' , 'LiveVideo\LiveVideosController@getLiveVideos');
 Route::get('privacy' , 'Home\HomeController@privacy');
+Route::get('campaign/get' , 'Campaign\CampaignController@get');

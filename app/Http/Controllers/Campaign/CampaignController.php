@@ -191,6 +191,8 @@ class CampaignController extends Controller
             $this->storeKeywords($request->input('keywords'));
             $campaignUrl = action('Campaign\CampaignController@show', ['id' => Session::get('campaign_id')]);
             $campaignUrl .= '/?liveVideo=' . Session::get('live_video_id');
+            $campaign->campaign_url = $campaignUrl;
+            $campaign->save();
         }
         else{
             $errors['campaignSave'] = 'We are having trouble saving Campaign!';
@@ -226,4 +228,17 @@ class CampaignController extends Controller
 
         DB::table('keywords')->insert($data);     
    }
+
+   public function get()
+   {
+        $campaigns = DB::select('SELECT campaigns.campaign_name, live_videos.live_video_name, campaigns.campaign_url from campaigns,live_videos
+                                 where campaigns.live_video_id = live_videos.live_vidoe_id');
+        return response()->json($campaigns);
+   }
+
+   public function showAll()
+   {
+       return view('campaign.campaigns');
+   }
+
 }
