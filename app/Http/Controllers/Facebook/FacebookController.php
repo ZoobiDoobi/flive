@@ -257,10 +257,4 @@ class FacebookController extends Controller
             return false;
         }
     }
-
-    public function keywordsExists($liveVideoId)
-    {
-        # code...
-        $keywords = Keyword::where()
-    }
 }
