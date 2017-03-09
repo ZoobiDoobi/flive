@@ -35,7 +35,9 @@
 @section('js-section')
     <script src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script>
+
         $(document).ready(function() {
+            var endPointUrl = $('#appUrl').text();
             $.ajax({
                 url : endPointUrl + 'campaign/get',
                 method : 'GET',
