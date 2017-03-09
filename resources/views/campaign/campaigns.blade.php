@@ -16,13 +16,6 @@
                         <span class="loading-message"></span>
                     </div>
                     <table id="campaigns" class="display" cellspacing="0" width="100%">
-                        <thead>
-                        <tr>
-                            <th>Campaign Name</th>
-                            <th>Live Video Name</th>
-                            <th>Campaign URL</th>
-                        </tr>
-                        </thead>
                     </table>
                 </div>
             </div>
@@ -47,8 +40,9 @@
                     $('#campaigns').css('display' , 'none');
                 }
             }).done(function(data , textStatus, jqXHR){
-                ('#loading').css('display' , 'none');
+                $('#loading').css('display' , 'none');
                 $('#campaigns').css('display' , 'block');
+
                 $('#campaigns').DataTable({
                     data : data,
                     columns: [
@@ -58,11 +52,11 @@
                     ]
                 });
             }).fail(function(data, textStatus, errorThrown){
-                ('#loading').css('display' , 'none');
+                $('#loading').css('display' , 'none');
                 $('#campaigns').css('display' , 'block');
                 console.log(errorThrown);
             }).always(function(data, textStatus, jqXHR){
-                ('#loading').css('display' , 'none');
+                $('#loading').css('display' , 'none');
             });
         } );
     </script>
