@@ -39,7 +39,7 @@
         $(document).ready(function() {
             var endPointUrl = $('#appUrl').text();
             $.ajax({
-                url : endPointUrl + 'campaign/get',
+                url : endPointUrl + '/campaign/get',
                 method : 'GET',
                 dataType : 'json',
                 beforeSend : function(){
@@ -50,7 +50,12 @@
                 ('#loading').css('display' , 'none');
                 $('#campaigns').css('display' , 'block');
                 $('#campaigns').DataTable({
-                    data : data
+                    data : data,
+                    columns: [
+                        { title: "Campaign Name" },
+                        { title: "Live Video Name" },
+                        { title: "Campaign URL" }
+                    ]
                 });
             }).fail(function(data, textStatus, errorThrown){
                 ('#loading').css('display' , 'none');
