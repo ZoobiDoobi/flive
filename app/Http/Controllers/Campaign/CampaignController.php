@@ -166,6 +166,9 @@ class CampaignController extends Controller
         if(count($request->input('keywords')) > 4){
             $errors['keywords'] = 'Keyowrds cannot be more than 4';
         }
+        else if(emptyArray($request->input('keywords'))){
+            $errors['keywords'] = 'Keyowrds cannot be more than 4';
+        }
         else{
             $campaign->keywords = $request->input('keywords');
             
@@ -176,7 +179,7 @@ class CampaignController extends Controller
             $campaign->image_path = asset('uploads/' . $request->file('bg-image')->getClientOriginalName());
         }
         else{
-            $campaign->image_path = 'https://livotes.com/public/uploads/placeholder.gif';
+            $campaign->image_path = 'https://livotes.com/public/uploads/background.png';
         }
         
         $campaign->live_video_id = $request->input('live_video_dropdown');
