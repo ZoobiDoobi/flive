@@ -155,7 +155,6 @@ class CampaignController extends Controller
 
        $data = [];
        $errors = [];
-       $campaignUrl = '';
         
        $campaign = new Campaign;
         if(! $request->input('campaignName')){
@@ -167,7 +166,7 @@ class CampaignController extends Controller
         if(count($request->input('keywords')) > 4){
             $errors['keywords'] = 'Keyowrds cannot be more than 4';
         }
-        else if(emptyArray($request->input('keywords'))){
+        else if(empty($request->input('keywords'))){
             $errors['keywords'] = 'Keywords are Required';
         }
         else{
