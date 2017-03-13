@@ -152,6 +152,7 @@ class CampaignController extends Controller
    }
    
    public function store(Request $request){
+
        $data = [];
        $errors = [];
        $campaignUrl = '';
@@ -167,7 +168,7 @@ class CampaignController extends Controller
             $errors['keywords'] = 'Keyowrds cannot be more than 4';
         }
         else if(emptyArray($request->input('keywords'))){
-            $errors['keywords'] = 'Keyowrds cannot be more than 4';
+            $errors['keywords'] = 'Keywords are Required';
         }
         else{
             $campaign->keywords = $request->input('keywords');
@@ -186,9 +187,15 @@ class CampaignController extends Controller
         $campaign->active = 1; //campaign is currently active
 
         Session::put('live_video_id',$request->input('live_video_dropdown'));
-        
-        if($campaign->save()){
-            //get the id of campaign and make a url
+
+        if(count($errors)){
+            $errors['campaignSave'] = 'We are having trouble saving Campaign!';
+            $data['errors'] = $errors;
+        }
+        else{
+
+            //Save campaign
+            $campaign->save();
             $campaignId = $campaign->id;
             Session::put('campaign_id' , $campaignId);
             $this->storeKeywords($request->input('keywords'));
@@ -196,18 +203,11 @@ class CampaignController extends Controller
             $campaignUrl .= '/?liveVideo=' . Session::get('live_video_id');
             $campaign->campaign_url = $campaignUrl;
             $campaign->save();
+            if($campaign->save()){
+                $data['success'] = true;
+                $data['url'] = $campaignUrl;
+            }
         }
-        else{
-            $errors['campaignSave'] = 'We are having trouble saving Campaign!';
-        }
-        if(count($errors)){
-            $data['errors'] = $errors;
-        }
-        else{
-            $data['success'] = true;
-            $data['url'] = $campaignUrl;
-        }
-
         echo json_encode($data , JSON_UNESCAPED_SLASHES);
    }
    

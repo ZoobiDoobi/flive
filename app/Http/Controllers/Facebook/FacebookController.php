@@ -167,26 +167,27 @@ class FacebookController extends Controller
                         //check if comment already exists in our db
                         $commentExist = $this->commentExists($comment['id']);
                         $authorExist = $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id);
-                        if( $commentExist || $authorExist){
-
+                        if( !($commentExist)){
+                            if(!($authorExist)){
+                                $data[$count] = array(
+                                    'comment_id' => $comment['id'],
+                                    'comment_body' => $comment['message'],
+                                    'comment_author_id' => $comment['from']['id'],
+                                    'comment_author_name' => $comment['from']['name'],
+                                    'active' => 1,
+                                    'keyword_id' => null,
+                                    'live_video_id' => $liveVideo->live_vidoe_id
+                                );
+                                $count++;
+                                $data = array_map([$this , 'assignKeywords'], $data);
+                                $filteredData = array_filter($data , function($element){
+                                    return !is_null($element['keyword_id']);
+                                });
+                                DB::table('comments')->insert($filteredData);
+                            }
                         }
                         else{
 
-                            $data[$count] = array(
-                                'comment_id' => $comment['id'], 
-                                'comment_body' => $comment['message'],
-                                'comment_author_id' => $comment['from']['id'],
-                                'comment_author_name' => $comment['from']['name'],
-                                'active' => 1,
-                                'keyword_id' => null,
-                                'live_video_id' => $liveVideo->live_vidoe_id
-                                );
-                            $count++;
-                            $data = array_map([$this , 'assignKeywords'], $data);
-                            $filteredData = array_filter($data , function($element){
-                                return !is_null($element['keyword_id']);
-                            });
-                            DB::table('comments')->insert($filteredData);
                         }
                     }
 
