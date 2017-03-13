@@ -34,3 +34,5 @@ Route::get('privacy' , 'Home\HomeController@privacy');
 Route::get('campaign/get' , 'Campaign\CampaignController@get');
 Route::get('campaigns/showAll' , 'Campaign\CampaignController@showAll');
 Route::get('campaign/{id}' , 'Campaign\CampaignController@show');
+
+Route::get('ajaxVotes/{campaignId}' , 'Campaign\CampaignController@ajaxVotes');

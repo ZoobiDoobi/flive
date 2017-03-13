@@ -157,6 +157,7 @@ class CampaignController extends Controller
        $errors = [];
         
        $campaign = new Campaign;
+
         if(! $request->input('campaignName')){
             $errors['campaignName'] = 'Campaign Name is Required!';
         }
@@ -242,5 +243,39 @@ class CampaignController extends Controller
    {
        return view('campaign.campaigns');
    }
+
+    public function ajaxVotes($campaignId , Request $request)
+    {
+        if($request->ajax()){
+
+            $campaign = Campaign::where('id' , $campaignId)->first();
+            if($campaign){
+
+                $votes = DB::select('SELECT keywords.keyword_name , COUNT(comments.keyword_id) as votes from keywords
+                                 LEFT JOIN comments ON comments.keyword_id =keywords.id 
+                                 WHERE keywords.campaign_id = ' . $campaignId . '
+                                 GROUP BY keywords.id');
+
+                $votesArray = [];
+                $count = 0;
+                if(count($votes)){ //Not empty and commenting has started
+                    foreach($votes as $vote){
+                        $tempArray = array(
+                            'keyword' => $vote->keyword_name,
+                            'votes' => $vote->votes
+                        );
+                        $votesArray[$count] = $tempArray;
+                        $count++;
+                    }
+                }
+                else{
+                    dd($votes);
+                }
+
+                return response()->json($votesArray);
+            }
+        }
+        return response()->json(['success' => false]);
+    }
 
 }
