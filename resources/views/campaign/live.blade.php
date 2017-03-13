@@ -15,6 +15,7 @@
    <!--  <link href="css/app.css" rel="stylesheet">-->
    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link href="//fonts.googleapis.com/css?family=Audiowide|Bungee+Inline" rel="stylesheet">
     <style>
         .col-md-3{
             min-height: 200px !important;
@@ -34,6 +35,12 @@
             margin-top: 550px;
               
         }
+        .left-side{
+            font-family: 'Bungee Inline', cursive;
+        }
+        .right-side{
+            font-family: 'Audiowide', cursive;
+        }
     </style>
 </head>
 <body style="background: url({{$imageUrl}});">
@@ -42,11 +49,11 @@
             <div class="row">
                 @if($boxCount == 2)
                     <div class="two-boxes">
-                        <div class="col-md-6 text-center" >
-                            <h1 class="keyword-heading">{{$votesArray[0]['keyword']}}</h1>
+                        <div class="col-md-6 text-center left-side" >
+                            <h1  class="keyword-heading">{{$votesArray[0]['keyword']}}</h1>
                             <h3 id="two-keyword-1-votes" class="keyword-vote">{{$votesArray[0]['votes']}}</h3>
                         </div>
-                        <div class="col-md-6 text-center" >
+                        <div class="col-md-6 text-center right-side" >
                             <h1 class="keyword-heading">{{$votesArray[1]['keyword']}}</h1>
                             <h3 id="two-keyword-2-votes" class="keyword-vote">{{$votesArray[1]['votes']}}</h3>
                         </div>
@@ -112,7 +119,7 @@
             }).done(function (data, textStatus , jqXHR) {
                 if(data.length == 2){
                     //it means there are two keywords and their votes
-                    $('.col-md-6').addClass('animated bounceIn');
+                    $('.col-md-6').toggleClass('animated bounceIn');
                     $('#two-keyword-1-votes').empty();
                     $('#two-keyword-1-votes').text(data[0].votes);
 
@@ -121,7 +128,7 @@
                 }
                 else if(data.length == 3){
                     //3 keywords and their votes
-                    $('.col-md-4').addClass('animated bounceIn');
+                    $('.col-md-4').toggleClass('animated bounceIn');
                     $('#three-keyword-1-votes').empty();
                     $('#three-keyword-1-votes').text(data[0].votes);
 
@@ -133,7 +140,7 @@
                 }
                 else if(data.length == 4){
                     // 4 keywords and their votes
-                    $('.col-md-3').addClass('animated bounceIn');
+                    $('.col-md-3').toggleClass('animated bounceIn');
                     $('#four-keyword-1-votes').empty();
                     $('#four-keyword-1-votes').text(data[0].votes);
 
@@ -147,7 +154,7 @@
                     $('#four-keyword-4-votes').text(data[3].votes);
                 }
             }).fail(function (data, errorThrown , jqXHR) {
-                alert('failed');
+                console.log('in fail');
                 console.log(data);
                 console.log(errorThrown);
                 console.log(jqXHR);
