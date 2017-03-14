@@ -208,25 +208,35 @@ class FacebookController extends Controller
             }
         }
         else if($request->isMethod('post')){
-            $liveVideoId = $request->input('entry.0.changes.0.value.id');
-            $liveVideoStatus = $request->input('entry.0.changes.0.value.status');
-            
-            $liveVideo = LiveVideo::where('live_vidoe_id' , $liveVideoId)->first();
-            if($liveVideo){
-                if($liveVideoStatus == 'live'){
-                    $liveVideo->status = $liveVideoStatus;
-                    $liveVideo->active = 1; //this video is live and we want to start cron job for this.
-                    $liveVideo->save();
+            //We are receiving two kind of webhooks, feed webhooks, and live video webhooks, so we have to filter these!
+            $webhookField = $request->input('entry.0.changes.0.field');
+
+            if($webhookField == 'live_videos'){
+
+                $liveVideoId = $request->input('entry.0.changes.0.value.id');
+                $liveVideoStatus = $request->input('entry.0.changes.0.value.status');
+
+                $liveVideo = LiveVideo::where('live_vidoe_id' , $liveVideoId)->first();
+                if($liveVideo){
+                    if($liveVideoStatus == 'live'){
+                        $liveVideo->status = $liveVideoStatus;
+                        $liveVideo->active = 1; //this video is live and we want to start cron job for this.
+                        $liveVideo->save();
+                    }
+                    else{
+                        $liveVideo->status = $liveVideoStatus;
+                        $liveVideo->active = 0;
+                        $liveVideo->save();
+                    }
                 }
                 else{
-                    $liveVideo->status = $liveVideoStatus;
-                    $liveVideo->active = 0;
-                    $liveVideo->save();
+                    dd($liveVideo);
                 }
             }
-            else{
-                dd($liveVideo);
+            else if($webhookField == 'feed'){
+
             }
+
         }
         return response('OK',200);
     }
