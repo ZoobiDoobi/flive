@@ -70,7 +70,22 @@ class LiveVideosController extends Controller
     private function saveLiveVideos($liveVideos , $fbPageId){
         
         foreach($liveVideos as $liveVideo){
-            
+
+            // I think this is the best place to get the object id of live video
+
+            $token = Session::get('facbook_access_token');
+            $this->fb->setDefaultAccessToken($token);
+
+            try {
+                $response = $this->fb->get('/' . $liveVideo['id'].'/?fields=video');
+                $responseBody = $response->getDecodedBody(); //this function returns an array of the response
+
+            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                dd($e->getMessage());
+            }
+
+            $liveVideoObjectId = $responseBody['video']['id']; //fetch the object id
+
             $liveVideoDb = LiveVideo::where('live_vidoe_id' , $liveVideo['id'])->first();
             
             if($liveVideoDb){ //it already exists in DB so update it
@@ -79,6 +94,7 @@ class LiveVideosController extends Controller
                 $liveVideoDb->fb_user_id = Session::get('fb_user_id');
                 $liveVideoDb->fb_page_id = $fbPageId;
                 $liveVideoDb->status = $liveVideo['status'];
+                $liveVideoDb->object_id = $liveVideoObjectId;
                 $liveVideoDb->save();
             }
             else{
@@ -89,6 +105,7 @@ class LiveVideosController extends Controller
                 $liveVideoDb->fb_user_id = Session::get('fb_user_id');
                 $liveVideoDb->fb_page_id = $fbPageId;
                 $liveVideoDb->status = $liveVideo['status'];
+                $liveVideoDb->object_id = $liveVideoObjectId;
                 $liveVideoDb->save();
             }
         }

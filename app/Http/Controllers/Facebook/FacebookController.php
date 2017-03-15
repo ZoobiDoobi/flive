@@ -186,9 +186,6 @@ class FacebookController extends Controller
                                 DB::table('comments')->insert($filteredData);
                             }
                         }
-                        else{
-
-                        }
                     }
 
                 } catch (Exception $e) {
@@ -196,6 +193,10 @@ class FacebookController extends Controller
                 }
             }
         }
+    }
+
+    public function cronPagesUnsubscribe(){
+
     }
 
     public function Webhook(Request $request)
@@ -220,7 +221,7 @@ class FacebookController extends Controller
                 if($liveVideo){
                     if($liveVideoStatus == 'live'){
                         $liveVideo->status = $liveVideoStatus;
-                        $liveVideo->active = 1; //this video is live and we want to start cron job for this.
+                        $liveVideo->active = 1;
                         $liveVideo->save();
                     }
                     else{
@@ -235,9 +236,59 @@ class FacebookController extends Controller
             }
             else if($webhookField == 'feed'){
 
-            }
+                //since we are recieving everything with feed, likes, reactions, everything happening on the page, we need to filter
+                //comments
+                $item = $request->input('entry.0.changes.0.value.item');
+                if($item == 'comment'){
+                    $commentId = $request->input('entry.0.changes.0.value.comment_id');
 
+
+                    if(!$this->commentExists($commentId)){ //this check is for discouraging Editing comments
+
+                        //fetch the post id , post id is something like = 34753498753458394_8394753987539487
+                        $postId = $request->input('entry.0.changes.0.value.post_id');
+                        //post_id contains the object_id , and that object_id is the live_video_object_id, after the underscore
+                        $postIdArray = explode('_',$postId);
+                        //second index will contain the object id
+                        $liveVideoObjectId = $postIdArray[1];
+
+                        //get the live_video_id from database table live_videos... because we don't want to change anything else
+                        //all the implementation still goes with live_vidoe_id
+                        $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
+                        if(!is_null($liveVideo)){
+                            if($liveVideo->status == 'live'){
+
+                                //fetch Author id because we have to check if author has not already commented on this video
+                                $commentAuthorId = $request->input('entry.0.changes.value.sender_id');
+                                $authorExists = $this->commentAuthorExists($commentAuthorId, $liveVideo->live_vidoe_id);
+
+                                if(! $authorExists)
+                                {
+                                    $commentAuthorName = $request->input('entry.0.changes.value.sender_name');
+                                    $commentMessage = $request->input('entry.0.changes.value.message');
+                                    $data = array(
+                                        'comment_id' => $commentId,
+                                        'comment_body' => $commentMessage,
+                                        'comment_author_id' => $commentAuthorId,
+                                        'comment_author_name' => $commentAuthorName,
+                                        'active' => 1,
+                                        'keyword_id' => null,
+                                        'live_video_id' => $liveVideo->live_vidoe_id
+                                    );
+
+                                    $data = array_map([$this , 'assignKeywords'], $data);
+                                    $filteredData = array_filter($data , function($element){
+                                        return !is_null($element['keyword_id']);
+                                    });
+                                    DB::table('comments')->insert($filteredData);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+
         return response('OK',200);
     }
     

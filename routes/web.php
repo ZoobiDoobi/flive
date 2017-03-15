@@ -36,3 +36,4 @@ Route::get('campaigns/showAll' , 'Campaign\CampaignController@showAll');
 Route::get('campaign/{id}' , 'Campaign\CampaignController@show');
 
 Route::get('ajaxVotes/{campaignId}' , 'Campaign\CampaignController@ajaxVotes');
+Route::get('facebook/unsubscribePages' , 'Facebook\FacebookController@cronPagesUnsubscribe');
