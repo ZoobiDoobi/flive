@@ -255,6 +255,7 @@ class FacebookController extends Controller
                         //get the live_video_id from database table live_videos... because we don't want to change anything else
                         //all the implementation still goes with live_vidoe_id
                         $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
+
                         if(!is_null($liveVideo)){
                             if($liveVideo->status == 'live'){
 
@@ -266,7 +267,9 @@ class FacebookController extends Controller
                                 {
                                     $commentAuthorName = $request->input('entry.0.changes.value.sender_name');
                                     $commentMessage = $request->input('entry.0.changes.value.message');
-                                    $data = array(
+                                    $count = 0; //following two lines are temporary implementation
+                                    $data = array();
+                                    $data[$count] = array(
                                         'comment_id' => $commentId,
                                         'comment_body' => $commentMessage,
                                         'comment_author_id' => $commentAuthorId,
