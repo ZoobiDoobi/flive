@@ -131,6 +131,7 @@ class FacebookController extends Controller
     public function assignKeywords($comment)
     {
         # code...
+
         $keywords = Keyword::where('live_video_id' , $comment['live_video_id'])->get()->toArray();
         $commentBody = strtolower($comment['comment_body']);
 
@@ -239,9 +240,10 @@ class FacebookController extends Controller
                 //since we are recieving everything with feed, likes, reactions, everything happening on the page, we need to filter
                 //comments
                 $item = $request->input('entry.0.changes.0.value.item');
+                
                 if($item == 'comment'){
                     $commentId = $request->input('entry.0.changes.0.value.comment_id');
-
+                    
 
                     if(!$this->commentExists($commentId)){ //this check is for discouraging Editing comments
 
@@ -256,17 +258,18 @@ class FacebookController extends Controller
                         //all the implementation still goes with live_vidoe_id
                         $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
 
+
                         if(!is_null($liveVideo)){
                             if($liveVideo->status == 'live'){
 
                                 //fetch Author id because we have to check if author has not already commented on this video
-                                $commentAuthorId = $request->input('entry.0.changes.value.sender_id');
+                                $commentAuthorId = $request->input('entry.0.changes.0.value.sender_id');
                                 $authorExists = $this->commentAuthorExists($commentAuthorId, $liveVideo->live_vidoe_id);
 
                                 if(! $authorExists)
                                 {
-                                    $commentAuthorName = $request->input('entry.0.changes.value.sender_name');
-                                    $commentMessage = $request->input('entry.0.changes.value.message');
+                                    $commentAuthorName = $request->input('entry.0.changes.0.value.sender_name');
+                                    $commentMessage = $request->input('entry.0.changes.0.value.message');
                                     $count = 0; //following two lines are temporary implementation
                                     $data = array();
                                     $data[$count] = array(
@@ -278,18 +281,42 @@ class FacebookController extends Controller
                                         'keyword_id' => null,
                                         'live_video_id' => $liveVideo->live_vidoe_id
                                     );
+                                    
 
                                     $data = array_map([$this , 'assignKeywords'], $data);
+
                                     $filteredData = array_filter($data , function($element){
                                         return !is_null($element['keyword_id']);
                                     });
+                                   
                                     DB::table('comments')->insert($filteredData);
                                 }
+                                else{
+                                    echo 'author already exists on this live video<br>';
+                                }
+                            }
+                            else{
+                                echo 'live video against this object id is not live status<br>';
                             }
                         }
+                        else{
+                            echo 'this live video does not exist<br>';
+                        }
+                    }
+                    else{
+                        echo 'this comment already exists<br>';
                     }
                 }
+                else{
+                    echo 'its not comment<br>';
+                }
             }
+            else{
+                echo 'its not feed';
+            }
+        }
+        else{
+            echo 'method is not post';
         }
 
         return response('OK',200);
