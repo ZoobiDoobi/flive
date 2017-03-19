@@ -5,6 +5,9 @@ namespace App\Objects;
 class FacebookWebhook{
 
 
+    public $hubChallenge; //we need this when facebook sends get request to verify the callback
+
+
     public $field; //we have two kinds of fields, live_videos, feed
 
     public $item; //it can be comment, like, share, or anything else

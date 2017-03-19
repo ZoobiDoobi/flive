@@ -18,16 +18,21 @@ class WebhookServiceProvider extends ServiceProvider
     {
 
         Route::bind('facebook_webhook' , function(){
+
+
             $facebookWebhook = new FacebookWebhook();
             $request = request();
             $verifyToken = 'Axb123xyz';
             if($request->isMethod('get')){
+
                 if($verifyToken == $request->input('hub_verify_token')){
-                    return $request->input('hub_challenge');
+                    $facebookWebhook->hubChallenge = $request->input('hub_verify_challenge');
                 }
             }
             else if($request->isMethod('post')){
+                echo 'in post request';
 
+                $facebookWebhook = new FacebookWebhook();
                 $facebookWebhook->field = $request->input('entry.0.changes.0.field');
 
                 if($facebookWebhook->field == 'live_videos'){
@@ -39,15 +44,14 @@ class WebhookServiceProvider extends ServiceProvider
                     $facebookWebhook->item = $request->input('entry.0.changes.0.value.item');
 
                     if($facebookWebhook->item == 'comment'){
-
                         $facebookWebhook->webhookCommentPostId = $request->input('entry.0.changes.0.value.post_id');
                         $facebookWebhook->webhookCommentId = $request->input('entry.0.changes.0.value.comment_id');
                         $facebookWebhook->webhookCommentSenderId = $request->input('entry.0.changes.0.value.sender_id');
                         $facebookWebhook->webhookCommentSenderName = $request->input('entry.0.changes.0.value.sender_name');
                         $facebookWebhook->webhookCommentBody = $request->input('entry.0.changes.0.value.message');
-
                     }
                 }
+
             }
             return $facebookWebhook;
         });

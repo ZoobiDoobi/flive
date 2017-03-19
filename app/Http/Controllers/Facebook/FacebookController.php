@@ -201,73 +201,84 @@ class FacebookController extends Controller
 
     public function Webhook(FacebookWebhook $facebookWebhook)
     {
-        if(!is_null($facebookWebhook)){
 
-            if($facebookWebhook->field == 'live_vidoes'){
+        if($facebookWebhook){
 
-                $liveVideo = LiveVideo::where('live_vidoe_id' , $facebookWebhook->webhookLiveVideoId);
-
-                if($liveVideo){
-                    if($facebookWebhook->webhookLiveVideoStatus == 'live'){
-                        $liveVideo->active = 1;
-                    }
-                    else{
-                        $liveVideo->active = 0;
-                    }
-
-
-                    //if the video is not live, remove page app subscription because we don't want to recieve its webhooks anymore
-                    $this->removePageSubscription($liveVideo->fb_user_id , $liveVideo->fb_page_id);
-
-                    $liveVideo->status = $facebookWebhook->webhookLiveVideoStatus;
-                    $liveVideo->save(); //Update the status
-                }
-
+            //its not a webhook, its get request just for confirmation
+            if($facebookWebhook->hubChallenge){
+                return $facebookWebhook->hubChallenge;
             }
-            else if($facebookWebhook->field == 'feed'){
+            else{
 
-                //then it is for sure that its a comment
-                $comment = Comment::where('comment_id' , $facebookWebhook->webhookCommentId)->first();
-                if(!$comment){
+                if($facebookWebhook->field == 'live_vidoes'){
 
-                    //fetch the post id , post id is something like = 34753498753458394_8394753987539487
-                    $postId = $facebookWebhook->webhookCommentPostId;
-                    //post_id contains the object_id , and that object_id is the live_video_object_id, after the underscore
-                    $postIdArray = explode('_',$postId);
-                    //second index will contain the object id
-                    $liveVideoObjectId = $postIdArray[1];
+                    $liveVideo = LiveVideo::where('live_vidoe_id' , $facebookWebhook->webhookLiveVideoId);
 
-                    //get the live_video_id from database table live_videos... because we don't want to change anything else
-                    //all the implementation still goes with live_vidoe_id
-                    $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
+                    if($liveVideo){
+                        if($facebookWebhook->webhookLiveVideoStatus == 'live'){
+                            $liveVideo->active = 1;
+                        }
+                        else{
+                            $liveVideo->active = 0;
+                        }
 
-                    if(!is_null($liveVideo)){
-                        if($liveVideo->status == 'live')
-                        {
-                            $commentAuthorExists = $this->commentAuthorExists($facebookWebhook->webhookCommentSenderId, $liveVideo->live_vidoe_id);
-                            if(!$commentAuthorExists)
+
+                        //if the video is not live, remove page app subscription because we don't want to recieve its webhooks anymore
+                        $this->removePageSubscription($liveVideo->fb_user_id , $liveVideo->fb_page_id);
+
+                        $liveVideo->status = $facebookWebhook->webhookLiveVideoStatus;
+                        $liveVideo->save(); //Update the status
+                    }
+
+                }
+                else if($facebookWebhook->field == 'feed'){
+
+                    //then it is for sure that its a comment
+                    $comment = Comment::where('comment_id' , $facebookWebhook->webhookCommentId)->first();
+                    if(!$comment){
+
+                        //fetch the post id , post id is something like = 34753498753458394_8394753987539487
+                        $postId = $facebookWebhook->webhookCommentPostId;
+                        //post_id contains the object_id , and that object_id is the live_video_object_id, after the underscore
+                        $postIdArray = explode('_',$postId);
+                        //second index will contain the object id
+                        $liveVideoObjectId = $postIdArray[1];
+
+                        //get the live_video_id from database table live_videos... because we don't want to change anything else
+                        //all the implementation still goes with live_vidoe_id
+                        $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
+
+                        if(!is_null($liveVideo)){
+                            if($liveVideo->status == 'live')
                             {
-                                $commentData[0] = array(
-                                    'comment_id' => $facebookWebhook->webhookCommentId,
-                                    'comment_body' => $facebookWebhook->webhookCommentBody,
-                                    'comment_author_id' => $facebookWebhook->webhookCommentSenderId,
-                                    'comment_author_name' => $facebookWebhook->webhookCommentSenderName,
-                                    'active' => 1,
-                                    'keyword_id' => null,
-                                    'live_video_id' => $liveVideo->live_vidoe_id
-                                );
-                                $commentData = array_map([$this , 'assignKeywords'], $commentData); //map keywords
-                                $filteredCommentData = array_filter($commentData , function($element){
-                                    return !is_null($element['keyword_id']);
-                                });
-                                DB::table('comments')->insert($filteredCommentData);
+                                $commentAuthorExists = $this->commentAuthorExists($facebookWebhook->webhookCommentSenderId, $liveVideo->live_vidoe_id);
+                                if(!$commentAuthorExists)
+                                {
+                                    $commentData[0] = array(
+                                        'comment_id' => $facebookWebhook->webhookCommentId,
+                                        'comment_body' => $facebookWebhook->webhookCommentBody,
+                                        'comment_author_id' => $facebookWebhook->webhookCommentSenderId,
+                                        'comment_author_name' => $facebookWebhook->webhookCommentSenderName,
+                                        'active' => 1,
+                                        'keyword_id' => null,
+                                        'live_video_id' => $liveVideo->live_vidoe_id
+                                    );
+                                    $commentData = array_map([$this , 'assignKeywords'], $commentData); //map keywords
+                                    $filteredCommentData = array_filter($commentData , function($element){
+                                        return !is_null($element['keyword_id']);
+                                    });
+                                    DB::table('comments')->insert($filteredCommentData);
+                                }
                             }
                         }
                     }
                 }
+                return response('OK',200);
             }
+
         }
-        return response('OK',200);
+
+
     }
 
     
