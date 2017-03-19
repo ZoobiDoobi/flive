@@ -36,7 +36,7 @@
               
         }
         .left-side{
-            font-family: 'Bungee Inline', cursive;
+            font-family: 'Audiowide', cursive;
         }
         .right-side{
             font-family: 'Audiowide', cursive;

@@ -14,7 +14,7 @@
 Route::get('/', 'Facebook\FacebookController@Login');
 Route::get('facebook/callback', 'Facebook\FacebookController@Callback');
 Route::get('pages/index', 'Facebook\FacebookPageController@Index');
-Route::match(['get','post'] , 'facebook/webhook','Facebook\FacebookController@Webhook');
+
 Route::post('campaign/create' , 'Campaign\CampaignController@create');
 Route::post('campaign/store', 'Campaign\CampaignController@store');
 
@@ -33,7 +33,13 @@ Route::get('liveVideo/get' , 'LiveVideo\LiveVideosController@getLiveVideos');
 Route::get('privacy' , 'Home\HomeController@privacy');
 Route::get('campaign/get' , 'Campaign\CampaignController@get');
 Route::get('campaigns/showAll' , 'Campaign\CampaignController@showAll');
+Route::post('webhook/test' , function(){
+    return 'zubair';
+});
 Route::get('campaign/{id}' , 'Campaign\CampaignController@show');
 
 Route::get('ajaxVotes/{campaignId}' , 'Campaign\CampaignController@ajaxVotes');
 Route::get('facebook/unsubscribePages' , 'Facebook\FacebookController@cronPagesUnsubscribe');
+
+
+Route::match(['get','post'] , 'facebook/{facebook_webhook}','Facebook\FacebookController@Webhook');

@@ -61,7 +61,6 @@ class CampaignController extends Controller
         
         if(! $fbPage ){
             //this facebook page does not exist already in our database
-            $fbPage = new FacebookPage;
             $fbPage->fb_page_id = $pageId;
             $fbPage->fb_page_name = $pageName;
             $fbPage->fb_user_id = Session::get('fb_user_id');
@@ -86,7 +85,8 @@ class CampaignController extends Controller
             }
         }
         //We need to get access token of the page and add our app to {page_id}/subscribed_apps endpoint
-        //By sending POST request
+        //By sending POST request to recieve webhook
+
         $token = Session::get('facbook_access_token');
     	$this->fb->setDefaultAccessToken($token);
         

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Facebook;
 
+use App\Objects\FacebookWebhook;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Session;
@@ -167,6 +168,7 @@ class FacebookController extends Controller
                     {    
                         //check if comment already exists in our db
                         $commentExist = $this->commentExists($comment['id']);
+
                         $authorExist = $this->commentAuthorExists($comment['from']['id'] , $liveVideo->live_vidoe_id);
                         if( !($commentExist)){
                             if(!($authorExist)){
@@ -197,141 +199,77 @@ class FacebookController extends Controller
     }
 
 
-    public function Webhook(Request $request)
+    public function Webhook(FacebookWebhook $facebookWebhook)
     {
-        # code...
-        $verifyToken = 'Axb123xyz';
-        if($request->isMethod('get')){
-            if($verifyToken == $request->input('hub_verify_token')){
-                return $request->input('hub_challenge');
-            }
-        }
-        else if($request->isMethod('post')){
-            //We are receiving two kind of webhooks, feed webhooks, and live video webhooks, so we have to filter these!
-            $webhookField = $request->input('entry.0.changes.0.field');
+        if(!is_null($facebookWebhook)){
 
-            if($webhookField == 'live_videos'){
+            if($facebookWebhook->field == 'live_vidoes'){
 
-                $liveVideoId = $request->input('entry.0.changes.0.value.id');
-                $liveVideoStatus = $request->input('entry.0.changes.0.value.status');
+                $liveVideo = LiveVideo::where('live_vidoe_id' , $facebookWebhook->webhookLiveVideoId);
 
-                $liveVideo = LiveVideo::where('live_vidoe_id' , $liveVideoId)->first();
                 if($liveVideo){
-                    if($liveVideoStatus == 'live'){
-                        $liveVideo->status = $liveVideoStatus;
+                    if($facebookWebhook->webhookLiveVideoStatus == 'live'){
                         $liveVideo->active = 1;
-                        $liveVideo->save();
                     }
                     else{
-                        $liveVideo->status = $liveVideoStatus;
                         $liveVideo->active = 0;
-                        $liveVideo->save();
                     }
+
+
+                    //if the video is not live, remove page app subscription because we don't want to recieve its webhooks anymore
+                    $this->removePageSubscription($liveVideo->fb_user_id , $liveVideo->fb_page_id);
+
+                    $liveVideo->status = $facebookWebhook->webhookLiveVideoStatus;
+                    $liveVideo->save(); //Update the status
                 }
-                else{
-                    dd($liveVideo);
-                }
+
             }
-            else if($webhookField == 'feed'){
+            else if($facebookWebhook->field == 'feed'){
 
-                //since we are recieving everything with feed, likes, reactions, everything happening on the page, we need to filter
-                //comments
-                $item = $request->input('entry.0.changes.0.value.item');
-                
-                if($item == 'comment'){
-                    $commentId = $request->input('entry.0.changes.0.value.comment_id');
-                    
+                //then it is for sure that its a comment
+                $comment = Comment::where('comment_id' , $facebookWebhook->webhookCommentId)->first();
+                if(!$comment){
 
-                    if(!$this->commentExists($commentId)){ //this check is for discouraging Editing comments
+                    //fetch the post id , post id is something like = 34753498753458394_8394753987539487
+                    $postId = $facebookWebhook->webhookCommentPostId;
+                    //post_id contains the object_id , and that object_id is the live_video_object_id, after the underscore
+                    $postIdArray = explode('_',$postId);
+                    //second index will contain the object id
+                    $liveVideoObjectId = $postIdArray[1];
 
-                        //fetch the post id , post id is something like = 34753498753458394_8394753987539487
-                        $postId = $request->input('entry.0.changes.0.value.post_id');
-                        //post_id contains the object_id , and that object_id is the live_video_object_id, after the underscore
-                        $postIdArray = explode('_',$postId);
-                        //second index will contain the object id
-                        $liveVideoObjectId = $postIdArray[1];
+                    //get the live_video_id from database table live_videos... because we don't want to change anything else
+                    //all the implementation still goes with live_vidoe_id
+                    $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
 
-                        //get the live_video_id from database table live_videos... because we don't want to change anything else
-                        //all the implementation still goes with live_vidoe_id
-                        $liveVideo = LiveVideo::where('object_id' , $liveVideoObjectId)->first();
-
-
-                        if(!is_null($liveVideo)){
-                            if($liveVideo->status == 'live'){
-
-                                //fetch Author id because we have to check if author has not already commented on this video
-                                $commentAuthorId = $request->input('entry.0.changes.0.value.sender_id');
-                                $authorExists = $this->commentAuthorExists($commentAuthorId, $liveVideo->live_vidoe_id);
-
-                                if(! $authorExists)
-                                {
-                                    $commentAuthorName = $request->input('entry.0.changes.0.value.sender_name');
-                                    $commentMessage = $request->input('entry.0.changes.0.value.message');
-                                    $count = 0; //following two lines are temporary implementation
-                                    $data = array();
-                                    $data[$count] = array(
-                                        'comment_id' => $commentId,
-                                        'comment_body' => $commentMessage,
-                                        'comment_author_id' => $commentAuthorId,
-                                        'comment_author_name' => $commentAuthorName,
-                                        'active' => 1,
-                                        'keyword_id' => null,
-                                        'live_video_id' => $liveVideo->live_vidoe_id
-                                    );
-                                    
-
-                                    $data = array_map([$this , 'assignKeywords'], $data);
-
-                                    $filteredData = array_filter($data , function($element){
-                                        return !is_null($element['keyword_id']);
-                                    });
-                                   
-                                    DB::table('comments')->insert($filteredData);
-                                }
-                                else{
-                                    echo 'author already exists on this live video<br>';
-                                }
-                            }
-                            else{
-                                echo 'live video against this object id is not live status<br>';
+                    if(!is_null($liveVideo)){
+                        if($liveVideo->status == 'live')
+                        {
+                            $commentAuthorExists = $this->commentAuthorExists($facebookWebhook->webhookCommentSenderId, $liveVideo->live_vidoe_id);
+                            if(!$commentAuthorExists)
+                            {
+                                $commentData[0] = array(
+                                    'comment_id' => $facebookWebhook->webhookCommentId,
+                                    'comment_body' => $facebookWebhook->webhookCommentBody,
+                                    'comment_author_id' => $facebookWebhook->webhookCommentSenderId,
+                                    'comment_author_name' => $facebookWebhook->webhookCommentSenderName,
+                                    'active' => 1,
+                                    'keyword_id' => null,
+                                    'live_video_id' => $liveVideo->live_vidoe_id
+                                );
+                                $commentData = array_map([$this , 'assignKeywords'], $commentData); //map keywords
+                                $filteredCommentData = array_filter($commentData , function($element){
+                                    return !is_null($element['keyword_id']);
+                                });
+                                DB::table('comments')->insert($filteredCommentData);
                             }
                         }
-                        else{
-                            echo 'this live video does not exist<br>';
-                        }
-                    }
-                    else{
-                        echo 'this comment already exists<br>';
                     }
                 }
-                else{
-                    echo 'its not comment<br>';
-                }
-            }
-            else{
-                echo 'its not feed';
             }
         }
-        else{
-            echo 'method is not post';
-        }
-
         return response('OK',200);
     }
-    
-    public function commentExists($commentId) 
-    {
-        
-        $comment = Comment::where('comment_id' , $commentId)->first();
-        
-        if($comment){
 
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
     
     public function commentAuthorExists($commentAuthorId , $liveVideoId) 
     {
@@ -345,5 +283,26 @@ class FacebookController extends Controller
         else{
             return false;
         }
+    }
+
+    private function removePageSubscription($facebookUserId , $facebookPageId){
+
+
+        $user = User::where('facebook_user_id' , $facebookUserId)->first();
+
+        $this->fb->setDefaultAccessToken($user->access_token);
+
+        try{
+            $response = $this->fb->get('/' . $facebookPageId . '?fields=access_token');
+
+            $response = json_decode($response->getBody());
+
+            $this->fb->delete('/' . $facebookPageId . '/subscribed_apps', [] , $response->access_token);
+
+        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            dd($e->getMessage());
+        }
+
+
     }
 }
