@@ -196,9 +196,6 @@ class FacebookController extends Controller
         }
     }
 
-    public function cronPagesUnsubscribe(){
-
-    }
 
     public function Webhook(Request $request)
     {
